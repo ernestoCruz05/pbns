@@ -1,0 +1,29 @@
+## @file
+# Disposable loader fixture that returns one enumerated EFI error.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = ReturnError
+  FILE_GUID                      = 2f34c39d-f06d-4a12-a83b-ce49d1fca4f6
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  ReturnError.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  UefiApplicationEntryPoint
+
+[Protocols]
+  gEfiLoadedImageProtocolGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes

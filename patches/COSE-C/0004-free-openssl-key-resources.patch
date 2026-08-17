@@ -1,0 +1,180 @@
+From 2173ee249189379c4173ac1428487d3b9819185c Mon Sep 17 00:00:00 2001
+From: PBNS Research Artifact <pbns@example.invalid>
+Date: Mon, 27 Jul 2026 00:00:04 +0000
+Subject: [PATCH] Release retained OpenSSL key resources
+
+Release EVP and EC references according to their documented ownership.
+Reuse the EVP key cached while importing an EC2 CBOR key, and release
+temporary groups, points, scalars, generated keys, and exported key views.
+
+---
+ src/CoseKey.cpp |  3 +++
+ src/openssl.cpp | 57 ++++++++++++++++++++++++++++++++-----------------
+ 2 files changed, 40 insertions(+), 20 deletions(-)
+
+diff --git a/src/CoseKey.cpp b/src/CoseKey.cpp
+index 1becefc..5d59928 100644
+--- a/src/CoseKey.cpp
++++ b/src/CoseKey.cpp
+@@ -99,6 +99,9 @@ bool COSE_KEY_Free(HCOSE_KEY h)
+ 	if (p->m_cborKey != nullptr && p->m_cborKey->parent == nullptr) {
+ 		CN_CBOR_FREE(p->m_cborKey, &p->m_allocContext);
+ 	}
++#if defined(COSE_C_USE_OPENSSL) && (OPENSSL_VERSION_NUMBER > 0x10100000L)
++	EVP_PKEY_free(p->m_opensslKey);
++#endif
+ 
+ 	COSE_FREE(p, &p->m_allocContext);
+ 
+diff --git a/src/openssl.cpp b/src/openssl.cpp
+index 34424ae..1197e39 100644
+--- a/src/openssl.cpp
++++ b/src/openssl.cpp
+@@ -1123,13 +1123,7 @@ EVP_PKEY *EVP_FromKey(COSE_KEY *pKey, CBOR_CONTEXT_COMMA cose_errback *perr)
+ 			int cbSize;
+ 			Safe_EC_KEY ecKey = ECKey_From(pKey, &cbSize, perr);
+ 			CHECK_CONDITION(ecKey != nullptr, perr->err);
+-			Safe_EVP_PKEY evpKey = EVP_PKEY_new();
+-			CHECK_CONDITION(evpKey != nullptr, COSE_ERR_OUT_OF_MEMORY);
+-			CHECK_CONDITION(
+-				EVP_PKEY_set1_EC_KEY(evpKey, ecKey) == 1, COSE_ERR_CRYPTO_FAIL);
+-			pKey->m_opensslKey = evpKey;
+-			EVP_PKEY_up_ref(pKey->m_opensslKey);
+-			return evpKey.Release();
++			return pKey->m_opensslKey;
+ 		}
+ 
+ 		case COSE_Key_Type_OKP: {
+@@ -1186,8 +1180,15 @@ EVP_PKEY *EVP_FromKey(COSE_KEY *pKey, CBOR_CONTEXT_COMMA cose_errback *perr)
+ 
+ EC_KEY *ECKey_From(COSE_KEY *pKey, int *cbGroup, cose_errback *perr)
+ {
++	EC_POINT *pPoint = nullptr;
++	EC_GROUP *ecgroup = nullptr;
++	BIGNUM *pbn = nullptr;
++
+ 	if (false) {
+ 	errorReturn:
++		EC_POINT_free(pPoint);
++		EC_GROUP_free(ecgroup);
++		BN_clear_free(pbn);
+ 		return nullptr;
+ 	}
+ 
+@@ -1219,8 +1220,6 @@ EC_KEY *ECKey_From(COSE_KEY *pKey, int *cbGroup, cose_errback *perr)
+ 	int cbKey;
+ 	const cn_cbor *p;
+ 	int nidGroup = -1;
+-	EC_POINT *pPoint = nullptr;
+-
+ 	Safe_EC_KEY pNewKey = EC_KEY_new();
+ 	CHECK_CONDITION(pNewKey != nullptr, COSE_ERR_OUT_OF_MEMORY);
+ 
+@@ -1247,7 +1246,7 @@ EC_KEY *ECKey_From(COSE_KEY *pKey, int *cbGroup, cose_errback *perr)
+ 			FAIL_CONDITION(COSE_ERR_INVALID_PARAMETER);
+ 	}
+ 
+-	EC_GROUP *ecgroup = EC_GROUP_new_by_curve_name(nidGroup);
++	ecgroup = EC_GROUP_new_by_curve_name(nidGroup);
+ 	CHECK_CONDITION(ecgroup != nullptr, COSE_ERR_INVALID_PARAMETER);
+ 	CHECK_CONDITION(
+ 		EC_KEY_set_group(pNewKey, ecgroup) == 1, COSE_ERR_CRYPTO_FAIL);
+@@ -1289,7 +1288,7 @@ EC_KEY *ECKey_From(COSE_KEY *pKey, int *cbGroup, cose_errback *perr)
+ 
+ 	p = cn_cbor_mapget_int(pKey->m_cborKey, COSE_Key_EC_d);
+ 	if (p != nullptr) {
+-		BIGNUM *pbn = BN_bin2bn(p->v.bytes, (int)p->length, nullptr);
++		pbn = BN_bin2bn(p->v.bytes, (int)p->length, nullptr);
+ 		CHECK_CONDITION(pbn != nullptr, COSE_ERR_CRYPTO_FAIL);
+ 		CHECK_CONDITION(
+ 			EC_KEY_set_private_key(pNewKey, pbn) == 1, COSE_ERR_CRYPTO_FAIL);
+@@ -1301,6 +1300,9 @@ EC_KEY *ECKey_From(COSE_KEY *pKey, int *cbGroup, cose_errback *perr)
+ 	CHECK_CONDITION(EVP_PKEY_set1_EC_KEY(pKey->m_opensslKey, pNewKey) == 1,
+ 		COSE_ERR_CRYPTO_FAIL);
+ 
++	EC_POINT_free(pPoint);
++	EC_GROUP_free(ecgroup);
++	BN_clear_free(pbn);
+ 	return pNewKey.Release();
+ }
+ 
+@@ -1443,9 +1445,14 @@ cn_cbor *EVP_ToCBOR(EVP_PKEY *pKey,
+ 	int type = EVP_PKEY_base_id(pKey);
+ 
+ 	switch (type) {
+-		case EVP_PKEY_EC:
+-			return EC_ToCBOR(EVP_PKEY_get1_EC_KEY(pKey), fCompressPoints,
+-				CBOR_CONTEXT_PARAM_COMMA perr);
++		case EVP_PKEY_EC: {
++			Safe_EC_KEY ecKey = EVP_PKEY_get1_EC_KEY(pKey);
++			if (ecKey == nullptr) {
++				perr->err = COSE_ERR_INVALID_PARAMETER;
++				return nullptr;
++			}
++			return EC_ToCBOR(ecKey, fCompressPoints, CBOR_CONTEXT_PARAM_COMMA perr);
++		}
+ 
+ 		case EVP_PKEY_X25519:
+ 		case EVP_PKEY_X448: {
+@@ -1970,14 +1977,15 @@ bool ECDH_ComputeSecret(COSE *pRecipient,
+ 	EVP_PKEY *evpPublic = nullptr;
+ 	EVP_PKEY *evpPrivate = nullptr;
+ 	EVP_PKEY_CTX *ctx = nullptr;
++	bool freePrivate = false;
+ 
+ 	if (false) {
+ 	errorReturn:
+ 		if (ctx != nullptr) {
+ 			EVP_PKEY_CTX_free(ctx);
+ 		}
+-		if (evpPublic != nullptr) {
+-			EVP_PKEY_free(evpPublic);
++		if (freePrivate) {
++			EVP_PKEY_free(evpPrivate);
+ 		}
+ 		return false;
+ 	}
+@@ -2004,14 +2012,19 @@ bool ECDH_ComputeSecret(COSE *pRecipient,
+ 
+ 		switch (type) {
+ 			case EVP_PKEY_EC: {
+-				EC_KEY *peckeyPrivate = EC_KEY_new();
++				Safe_EC_KEY peckeyPrivate = EC_KEY_new();
+ 				const EC_KEY *peckeyPublic = EVP_PKEY_get0_EC_KEY(evpPublic);
+-				EC_KEY_set_group(
+-					peckeyPrivate, EC_KEY_get0_group(peckeyPublic));
++				CHECK_CONDITION(peckeyPrivate != nullptr && peckeyPublic != nullptr,
++					COSE_ERR_OUT_OF_MEMORY);
++				CHECK_CONDITION(EC_KEY_set_group(
++					peckeyPrivate, EC_KEY_get0_group(peckeyPublic)) == 1,
++					COSE_ERR_CRYPTO_FAIL);
+ 				CHECK_CONDITION(EC_KEY_generate_key(peckeyPrivate) == 1,
+ 					COSE_ERR_CRYPTO_FAIL);
+ 				evpPrivate = EVP_PKEY_new();
+-				EVP_PKEY_set1_EC_KEY(evpPrivate, peckeyPrivate);
++				CHECK_CONDITION(evpPrivate != nullptr, COSE_ERR_OUT_OF_MEMORY);
++				CHECK_CONDITION(EVP_PKEY_set1_EC_KEY(evpPrivate, peckeyPrivate) == 1,
++					COSE_ERR_CRYPTO_FAIL);
+ 			} break;
+ 
+ 			case EVP_PKEY_X25519:
+@@ -2029,6 +2042,7 @@ bool ECDH_ComputeSecret(COSE *pRecipient,
+ 			default:
+ 				FAIL_CONDITION(COSE_ERR_INVALID_PARAMETER);
+ 		}
++		freePrivate = true;
+ 
+ 		cn_cbor *pcborPrivate = EVP_ToCBOR(
+ 			evpPrivate, fCompressPoints, CBOR_CONTEXT_PARAM_COMMA perr);
+@@ -2068,6 +2082,9 @@ bool ECDH_ComputeSecret(COSE *pRecipient,
+ 	if (ctx != nullptr) {
+ 		EVP_PKEY_CTX_free(ctx);
+ 	}
++	if (freePrivate) {
++		EVP_PKEY_free(evpPrivate);
++	}
+ 
+ 	*ppbSecret = skey;
+ 	*pcbSecret = skeylen;
+-- 
+2.54.0

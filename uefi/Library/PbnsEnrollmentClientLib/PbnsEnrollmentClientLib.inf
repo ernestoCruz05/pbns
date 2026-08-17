@@ -1,0 +1,27 @@
+## @file
+# PBNS enrollment client key and TLS ownership adapter.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsEnrollmentClientLib
+  FILE_GUID                      = 765edb9f-e4db-4614-9f9a-7080569e7a40
+  MODULE_TYPE                    = UEFI_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsEnrollmentClientLib
+
+[Sources]
+  PbnsEnrollmentClientLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  PbnsCoseCryptoLib
+  PbnsTlsTransportLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-unused-parameter

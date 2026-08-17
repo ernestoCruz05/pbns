@@ -1,0 +1,32 @@
+## @file
+# Audited tpm2-tss 4.1.3 MU subset for firmware.
+#
+# SPDX-License-Identifier: BSD-2-Clause
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = Tss2MuLib
+  FILE_GUID                      = d055612e-e74d-47ca-b702-7ba3a59ba578
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 4.1.3
+  LIBRARY_CLASS                  = Tss2MuLib
+
+[Sources]
+  ../../../.deps/tpm2-tss/src/tss2-mu/base-types.c
+  ../../../.deps/tpm2-tss/src/tss2-mu/tpm2b-types.c
+  ../../../.deps/tpm2-tss/src/tss2-mu/tpma-types.c
+  ../../../.deps/tpm2-tss/src/tss2-mu/tpml-types.c
+  ../../../.deps/tpm2-tss/src/tss2-mu/tpms-types.c
+  ../../../.deps/tpm2-tss/src/tss2-mu/tpmt-types.c
+  ../../../.deps/tpm2-tss/src/tss2-mu/tpmu-types.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  PbnsUefiPlatformLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -I$(WORKSPACE)/pbns/uefi/Library/Tss2Compat -I$(WORKSPACE)/pbns/uefi/ThirdParty/Tss2Compat -I$(WORKSPACE)/pbns/.deps/tpm2-tss/include/tss2 -I$(WORKSPACE)/pbns/.deps/tpm2-tss/src -DMAXLOGLEVEL=0 -DDISABLE_VENDOR -DDISABLE_WEAK_CRYPTO -U__linux__ -U__unix__ -fno-builtin-memcpy -fno-builtin-memmove -fno-builtin-memset

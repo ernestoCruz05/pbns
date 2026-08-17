@@ -1,0 +1,44 @@
+## @file
+# PBNS challenge-driven platform attestation application.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsAttest
+  FILE_GUID                      = e2055c85-5abc-4f48-85ac-dd66629732c4
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsAttest.c
+  PbnsDeploymentTrustBuild.c
+
+[Packages]
+  CryptoPkg/CryptoPkg.dec
+  MdePkg/MdePkg.dec
+  SecurityPkg/SecurityPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MbedTlsLib
+  MemoryAllocationLib
+  PbnsAttestationClientLib
+  PbnsCoreLib
+  PbnsCoseCryptoLib
+  PbnsIdentityLib
+  PbnsInventoryLib
+  PbnsMeasuredBootLib
+  PbnsTlsTransportLib
+  PbnsTpmIdentityLib
+  PbnsTrustedTimeLib
+  PbnsUefiPlatformLib
+  PbnsUsbTransportLib
+  UefiApplicationEntryPoint
+  UefiLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -I$(PBNS_DEPLOYMENT_GENERATED_ABS) -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include

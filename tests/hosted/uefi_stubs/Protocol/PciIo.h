@@ -1,0 +1,13 @@
+#ifndef PBNS_TEST_PCI_IO_H
+#define PBNS_TEST_PCI_IO_H
+#include <Uefi.h>
+extern EFI_GUID gEfiPciIoProtocolGuid;
+typedef enum { EfiPciIoWidthUint8 = 0 } EFI_PCI_IO_PROTOCOL_WIDTH;
+typedef struct EFI_PCI_IO_PROTOCOL EFI_PCI_IO_PROTOCOL;
+typedef EFI_STATUS(EFIAPI *EFI_PCI_CONFIG)(EFI_PCI_IO_PROTOCOL *This,
+  EFI_PCI_IO_PROTOCOL_WIDTH Width, UINT32 Offset, UINTN Count, VOID *Buffer);
+typedef EFI_STATUS(EFIAPI *EFI_PCI_GET_LOCATION)(EFI_PCI_IO_PROTOCOL *This,
+  UINTN *Segment, UINTN *Bus, UINTN *Device, UINTN *Function);
+typedef struct { EFI_PCI_CONFIG Read; EFI_PCI_CONFIG Write; } EFI_PCI_CONFIG_ACCESS;
+struct EFI_PCI_IO_PROTOCOL { EFI_PCI_CONFIG_ACCESS Pci; EFI_PCI_GET_LOCATION GetLocation; };
+#endif

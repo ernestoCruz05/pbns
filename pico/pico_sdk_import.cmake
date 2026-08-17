@@ -1,0 +1,11 @@
+if(NOT DEFINED PICO_SDK_PATH)
+    if(DEFINED ENV{PICO_SDK_PATH})
+        set(PICO_SDK_PATH "$ENV{PICO_SDK_PATH}")
+    else()
+        message(FATAL_ERROR "PICO_SDK_PATH is required")
+    endif()
+endif()
+
+get_filename_component(PICO_SDK_PATH "${PICO_SDK_PATH}" REALPATH)
+set(PICO_SDK_PATH "${PICO_SDK_PATH}" CACHE PATH "Pinned Pico SDK path" FORCE)
+include("${PICO_SDK_PATH}/external/pico_sdk_import.cmake")

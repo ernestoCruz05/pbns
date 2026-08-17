@@ -1,0 +1,37 @@
+## @file
+# PBNS live enrolled trusted-time UEFI application.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTimeLive
+  FILE_GUID                      = 8416e85f-b6de-4787-a6bb-a45bd0579149
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsTimeLive.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MemoryAllocationLib
+  PbnsCoreLib
+  PbnsCoseCryptoLib
+  PbnsIdentityLib
+  PbnsTpmIdentityLib
+  PbnsTrustedTimeLib
+  PbnsUefiPlatformLib
+  PbnsUsbTransportLib
+  UefiApplicationEntryPoint
+  UefiBootServicesTableLib
+  UefiLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes

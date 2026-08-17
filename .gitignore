@@ -1,0 +1,44 @@
+# Build and dependencies
+build/
+build-*/
+Build/
+.deps/
+dist/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Integration, logs, and runtime state
+integration/state/
+eval/results/
+eval/evidence/
+*.log
+!eval/raw/fuzzing/*.log
+!eval/raw/bare-metal/*.log
+*.tmp
+*.sqlite
+*.sqlite3
+
+# Binaries and intermediate artifacts
+*.uf2
+*.elf
+*.map
+*.pcap
+*.pcapng
+
+# Sensitive secrets and environment
+.env
+.env.*
+*.key
+*.p12
+*.pfx
+*.pfx
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*~

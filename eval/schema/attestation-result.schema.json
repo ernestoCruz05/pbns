@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pbns.local/schema/attestation-result-v1.json",
+  "title": "PBNS live attestation evidence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "runId", "createdAt", "expiresAt", "platform", "stages"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "kind": {"enum": ["qemu", "physical"]},
+    "runId": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "platform": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/platform"}
+      ]
+    },
+    "stages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["privacy", "quote-binding", "eventlog-replay", "baseline", "receipt", "ciphertext-capture", "swtpm", "physical-full-2"],
+      "properties": {
+        "privacy": {"$ref": "#/$defs/stage"},
+        "quote-binding": {"$ref": "#/$defs/stage"},
+        "eventlog-replay": {"$ref": "#/$defs/stage"},
+        "baseline": {"$ref": "#/$defs/stage"},
+        "receipt": {"$ref": "#/$defs/stage"},
+        "ciphertext-capture": {"$ref": "#/$defs/stage"},
+        "swtpm": {"$ref": "#/$defs/stage"},
+        "physical-full-2": {"$ref": "#/$defs/stage"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "qemu"}}, "required": ["kind"]},
+      "then": {"properties": {"platform": {"type": "null"}}},
+      "else": {"properties": {"platform": {"$ref": "#/$defs/platform"}}}
+    }
+  ],
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "size", "provenance"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9._/-]+$"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "size": {"type": "integer", "minimum": 1, "maximum": 67108864},
+        "provenance": {"enum": ["live-runtime", "qemu-swtpm", "physical-gate", "ciphertext-checker"]}
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "command", "startedAt", "finishedAt", "evidence"],
+      "properties": {
+        "status": {"enum": ["passed", "failed", "not-run"]},
+        "command": {"type": "string", "maxLength": 512},
+        "startedAt": {"type": ["string", "null"], "format": "date-time"},
+        "finishedAt": {"type": ["string", "null"], "format": "date-time"},
+        "evidence": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/artifact"}}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "not-run"}}, "required": ["status"]},
+          "then": {
+            "properties": {
+              "command": {"const": ""},
+              "startedAt": {"type": "null"},
+              "finishedAt": {"type": "null"},
+              "evidence": {"maxItems": 0}
+            }
+          },
+          "else": {
+            "properties": {
+              "command": {"type": "string", "minLength": 1},
+              "startedAt": {"type": "string", "format": "date-time"},
+              "finishedAt": {"type": "string", "format": "date-time"},
+              "evidence": {"minItems": 1}
+            }
+          }
+        }
+      ]
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "fingerprintDigest", "capabilities", "restorationProof"],
+      "properties": {
+        "class": {"enum": ["intel-ptt", "amd-ftpm"]},
+        "fingerprintDigest": {"type": "string", "pattern": "^[0-9a-f]{64}$", "not": {"pattern": "^0{64}$"}},
+        "restorationProof": {"const": true},
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tpm2", "p256-identity", "ecc-p256-ak-quote", "makecredential-activatecredential", "sha256-pcr-bank", "tcg-event-log", "approved-rng"],
+          "properties": {
+            "tpm2": {"const": true},
+            "p256-identity": {"const": true},
+            "ecc-p256-ak-quote": {"const": true},
+            "makecredential-activatecredential": {"const": true},
+            "sha256-pcr-bank": {"const": true},
+            "tcg-event-log": {"const": true},
+            "approved-rng": {"const": true}
+          }
+        }
+      }
+    }
+  }
+}

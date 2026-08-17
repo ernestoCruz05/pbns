@@ -1,0 +1,26 @@
+## @file
+# Disposable loader fixture that returns EFI_SUCCESS.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = ReturnSuccess
+  FILE_GUID                      = e04fd0a7-df93-4667-a442-9887cf21a27f
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  ReturnSuccess.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes

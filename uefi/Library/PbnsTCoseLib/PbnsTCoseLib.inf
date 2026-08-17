@@ -1,0 +1,44 @@
+## @file
+# Pinned upstream t_cose Sign1 and ECDH-ES encryption subset.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTCoseLib
+  FILE_GUID                      = 4db46f11-026d-4cb8-a8fb-f8e73333f9af
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 2.0.0
+  LIBRARY_CLASS                  = PbnsTCoseLib
+
+[Sources]
+  ../../../build/uefi-t-cose/src/t_cose_sign1_sign.c
+  ../../../build/uefi-t-cose/src/t_cose_parameters.c
+  ../../../build/uefi-t-cose/src/t_cose_sign1_verify.c
+  ../../../build/uefi-t-cose/src/t_cose_util.c
+  ../../../build/uefi-t-cose/src/t_cose_key.c
+  ../../../build/uefi-t-cose/src/t_cose_sign_sign.c
+  ../../../build/uefi-t-cose/src/t_cose_signature_sign_main.c
+  ../../../build/uefi-t-cose/src/t_cose_signature_sign_eddsa.c
+  ../../../build/uefi-t-cose/src/t_cose_sign_verify.c
+  ../../../build/uefi-t-cose/src/t_cose_signature_verify_main.c
+  ../../../build/uefi-t-cose/src/t_cose_signature_verify_eddsa.c
+  ../../../build/uefi-t-cose/src/t_cose_encrypt_enc.c
+  ../../../build/uefi-t-cose/src/t_cose_encrypt_dec.c
+  ../../../build/uefi-t-cose/src/t_cose_recipient_dec_keywrap.c
+  ../../../build/uefi-t-cose/src/t_cose_recipient_enc_keywrap.c
+  ../../../build/uefi-t-cose/src/t_cose_recipient_dec_esdh.c
+  ../../../build/uefi-t-cose/src/t_cose_recipient_enc_esdh.c
+  ../../../build/uefi-t-cose/src/t_cose_qcbor_gap.c
+  ../../../build/uefi-t-cose/src/t_cose_private.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  PbnsQcborLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -I$(WORKSPACE)/pbns/build/uefi-t-cose/src -I$(WORKSPACE)/pbns/uefi/Library/Tss2Compat -DT_COSE_DISABLE_ES384 -DT_COSE_DISABLE_ES512 -DT_COSE_DISABLE_PS256 -DT_COSE_DISABLE_PS384 -DT_COSE_DISABLE_PS512 -DT_COSE_DISABLE_COSE_SIGN -DT_COSE_DISABLE_SHORT_CIRCUIT_SIGN -fno-lto

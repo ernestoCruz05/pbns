@@ -1,0 +1,31 @@
+## @file
+# Bounded tpm2-tss TCTI over EFI TCG2.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTss2TctiLib
+  FILE_GUID                      = 8750776f-c57f-47f6-bf1b-5cc916568d94
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsTss2TctiLib
+
+[Sources]
+  PbnsTss2Tcti.c
+  PbnsTpmSubmitUefi.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  UefiBootServicesTableLib
+
+[Protocols]
+  gEfiTcg2ProtocolGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -I$(WORKSPACE)/pbns/uefi/Library/Tss2Compat -I$(WORKSPACE)/pbns/.deps/tpm2-tss/include -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings

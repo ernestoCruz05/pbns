@@ -1,0 +1,16 @@
+{
+  "static_code_size_x86_64_kib": 42.8,
+  "pe_recovery_size_kib": 184.5,
+  "pe_attest_size_kib": 212.0,
+  "uefi_heap_peak_mib": 1.85,
+  "uefi_recovery_ram_page_mib": 25.32,
+  "pico_flash_used_kib": 412.0,
+  "pico_flash_total_kib": 2048.0,
+  "pico_flash_used_pct": 20.1,
+  "pico_sram_used_kib": 98.4,
+  "pico_sram_total_kib": 264.0,
+  "pico_sram_used_pct": 37.3,
+  "pico_power_ma": 88.0,
+  "pico_power_mw": 440.0,
+  "gateway_rss_mib": 18.2
+}

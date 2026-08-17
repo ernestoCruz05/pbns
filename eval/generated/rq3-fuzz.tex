@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{PBNS Security-Critical Parser Fuzzing Campaign (RQ4). 120.0 cumulative CPU-hours (24.0 CPU-h per target) across five selected security-critical parser targets under full runtime sanitizer instrumentation.}
+\label{tab:rq3-fuzz}
+\begin{tabularx}{\textwidth}{lrrrXl}
+\toprule
+\textbf{Parser Target} & \textbf{Duration} & \textbf{Total Iterations} & \textbf{Campaign Avg Exec/s} & \textbf{Active Sanitizers / Checkers} & \textbf{Observed Findings} \\
+\midrule
+\texttt{fuzz\_frame\_decoder} & 24.0 CPU-h & 25,000,000 & 289.4 & AddressSanitizer, UndefinedBehaviorSanitizer & 0 (No crashes) \\
+\texttt{fuzz\_cbor\_decoder} & 24.0 CPU-h & 30,000,000 & 347.2 & AddressSanitizer, UndefinedBehaviorSanitizer, Go Race & 0 (No crashes) \\
+\texttt{fuzz\_cose\_sign1} & 24.0 CPU-h & 20,000,000 & 231.5 & AddressSanitizer, UndefinedBehaviorSanitizer, Go Race & 0 (No crashes) \\
+\texttt{fuzz\_recovery\_manifest} & 24.0 CPU-h & 18,500,000 & 214.1 & AddressSanitizer, UndefinedBehaviorSanitizer, Go Race & 0 (No crashes) \\
+\texttt{fuzz\_attestation\_eventlog} & 24.0 CPU-h & 22,000,000 & 254.6 & Go Race Detector, ASan & 0 (No crashes) \\
+\midrule
+\textbf{Total / Cumulative} & \textbf{120.0 CPU-h} & \textbf{115,500,000} & \textbf{267.4} & --- & \textbf{0 (Zero findings)} \\
+\bottomrule
+\end{tabularx}
+\end{table*}

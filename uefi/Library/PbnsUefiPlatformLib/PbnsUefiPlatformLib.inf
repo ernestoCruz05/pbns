@@ -1,0 +1,33 @@
+## @file
+# PBNS UEFI platform adapter.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsUefiPlatformLib
+  FILE_GUID                      = 73c08de2-ed98-423e-bace-449aa56a8eb5
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsUefiPlatformLib|UEFI_APPLICATION
+
+[Sources]
+  PbnsUefiPlatformLib.c
+  PbnsUefiClockMath.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  IntrinsicLib
+  MemoryAllocationLib
+  RngLib
+
+[Protocols]
+  gEfiCpuArchProtocolGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -fstack-usage -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings

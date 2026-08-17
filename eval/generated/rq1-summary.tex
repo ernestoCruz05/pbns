@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{PBNS Feasibility and Hardware-in-the-Loop Testbed Verification (RQ1 \& RQ2). Validated end-to-end against stock QEMU 10.2.2 / OVMF / swtpm coupled via physical USB passthrough to a genuine Raspberry Pi Pico W.}
+\label{tab:rq1-summary}
+\begin{tabularx}{\textwidth}{lXXc}
+\toprule
+\textbf{Service / Component} & \textbf{Testbed Environment} & \textbf{Assurance / Evidence Gate} & \textbf{Status} \\
+\midrule
+Firmware Broker \& Framing & QEMU + Physical Pico W & Frame reassembly, CRC32C, bounded buffers & \checkmark\ Pass \\
+UEFI-Owned TLS 1.2 & QEMU + Physical Pico W & \texttt{TLS\_ECDHE\_ECDSA\_WITH\_AES\_128\_GCM}, SPKI pin & \checkmark\ Pass \\
+Signed Authenticated Time & QEMU + Physical Pico W & Nonce-bound P-256 monotonic interval assertion & \checkmark\ Pass \\
+Authenticated RAM Recovery & QEMU + Physical Pico W & 25.32\,MiB (26,553,920-byte) UKI stream, anti-rollback, RO disk & \checkmark\ Pass \\
+TPM 2.0 Identity \& Attestation & QEMU + Physical Pico W & EK validation, P-256 quote, signed full receipt & \checkmark\ Pass \\
+\midrule
+Pico-Absent Normal Boot & QEMU / OVMF & 30/30 consecutive clean boots without delay & \checkmark\ Pass \\
+\bottomrule
+\end{tabularx}
+\end{table*}

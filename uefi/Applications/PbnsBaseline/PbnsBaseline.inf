@@ -1,0 +1,29 @@
+## @file
+# PBNS controlled-enrollment baseline software checkpoint.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsBaseline
+  FILE_GUID                      = 4be5a857-3bfa-46c8-9d2b-cb68b0c26d25
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsBaseline.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MemoryAllocationLib
+  PbnsEnrollmentBaselineLib
+  PbnsMeasuredBootLib
+  PbnsUefiPlatformLib
+  UefiApplicationEntryPoint
+  UefiLib

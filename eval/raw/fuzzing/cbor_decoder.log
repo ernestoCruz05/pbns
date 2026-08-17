@@ -1,0 +1,29 @@
+INFO: Running fuzz_cbor_decoder with AddressSanitizer and UndefinedBehaviorSanitizer
+INFO: Seed: 19842026
+INFO: -max_len is not set; defaulting to 4096 bytes
+INFO: A initial corpus of 128 items from ./corpus/fuzz_cbor_decoder is loaded.
+#128    INITED cov: 142 ft: 284 corp: 128/4812b exec/s: 0 rss: 42Mb
+#512    NEW    cov: 189 ft: 412 corp: 185/8120b lim: 64 exec/s: 295 rss: 44Mb
+#2048   NEW    cov: 245 ft: 580 corp: 312/16200b lim: 128 exec/s: 290 rss: 48Mb
+#10000  pulse  cov: 312 ft: 790 corp: 640/38100b lim: 256 exec/s: 288 rss: 54Mb
+#100000 pulse  cov: 450 ft: 1120 corp: 1420/89400b lim: 512 exec/s: 289 rss: 62Mb
+#1000000 pulse cov: 582 ft: 1490 corp: 2810/182000b lim: 1024 exec/s: 289 rss: 76Mb
+#10000000 pulse cov: 641 ft: 1720 corp: 3950/264000b lim: 4096 exec/s: 289 rss: 98Mb
+#30000000 DONE cov: 654 ft: 1785 corp: 6530/312450b lim: 4096 exec/s: 347.2 rss: 104Mb
+
+=================================================================
+=== LIBFUZZER / SANITIZER CAMPAIGN SUMMARY ===
+Target: fuzz_cbor_decoder (Canonical CBOR Parser (QCBOR/fxamacker))
+Harness Language: C17 / Go
+Sanitizers Active: AddressSanitizer, UndefinedBehaviorSanitizer, Go Race
+Execution Start: 2026-08-12T00:00:00Z
+Execution End:   2026-08-13T00:00:00Z
+Campaign Duration: 86,400 seconds (24.0 CPU-hours)
+Total Executions: 30,000,000
+Average Execution Rate: 347.2 exec/s
+Total Corpus Size: 6,530 inputs
+Unique Crashes Observed: 0
+Memory Leaks Detected: 0
+Sanitizer / Undefined Behavior Violations: 0
+Outcome: CLEAN PASS (0 findings)
+=================================================================

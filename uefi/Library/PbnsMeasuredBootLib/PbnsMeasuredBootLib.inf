@@ -1,0 +1,39 @@
+## @file
+# PBNS bounded TCG2 event-log and SHA-256 PCR capture.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsMeasuredBootLib
+  FILE_GUID                      = 48f5730a-3444-4cb8-b48f-66f311f847af
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsMeasuredBootLib
+
+[Sources]
+  PbnsMeasuredBootAdapterCore.c
+  PbnsMeasuredBootUefiAdapter.c
+  PbnsMeasuredBootLib.c
+
+[Packages]
+  CryptoPkg/CryptoPkg.dec
+  MdePkg/MdePkg.dec
+  SecurityPkg/SecurityPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MbedTlsLib
+  PbnsCoreLib
+  PbnsUefiPlatformLib
+  Tpm2CommandLib
+  UefiBootServicesTableLib
+
+[Protocols]
+  gEfiTcg2ProtocolGuid
+  gEfiTcg2FinalEventsTableGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include

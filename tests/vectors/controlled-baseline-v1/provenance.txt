@@ -1,0 +1,4 @@
+generator: pbns/gateway/internal/baseline/testdata/generate_controlled.go
+rebuild: (cd pbns/gateway && go run ./internal/baseline/testdata/generate_controlled.go --output ../tests/vectors/controlled-baseline-v1/controlled_baseline.inc --provenance ../tests/vectors/controlled-baseline-v1/provenance.txt)
+encoder: github.com/fxamacker/cbor/v2 v2.9.2 canonical
+vector-sha256: b9e66bcf9d89bab727a1983a99ef735fefcd517227205bf0ea165148701979d0

@@ -1,0 +1,32 @@
+## @file
+# PBNS deterministic controlled-enrollment baseline capture.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsEnrollmentBaselineLib
+  FILE_GUID                      = f8b052d8-ef64-4053-97bb-a1c8ce803c93
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsEnrollmentBaselineLib
+
+[Sources]
+  PbnsEnrollmentBaselineLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MbedTlsLib
+  PbnsCoreLib
+  PbnsInventoryLib
+  PbnsMeasuredBootLib
+  PbnsUefiPlatformLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include

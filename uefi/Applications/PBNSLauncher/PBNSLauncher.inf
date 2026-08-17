@@ -1,0 +1,38 @@
+## @file
+# Silent PBNS local-loader chainloader.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PBNSLauncher
+  FILE_GUID                      = 665f339e-9ea4-42b5-8e09-7b4b52340a93
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PBNSLauncher.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  DevicePathLib
+  MemoryAllocationLib
+  PbnsBootConfigLib
+  PbnsLauncherPolicyLib
+  PrintLib
+  UefiApplicationEntryPoint
+  UefiLib
+
+[Guids]
+  gEfiGlobalVariableGuid
+
+[Protocols]
+  gEfiLoadedImageProtocolGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes

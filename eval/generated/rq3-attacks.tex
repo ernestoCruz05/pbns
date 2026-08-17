@@ -1,0 +1,38 @@
+\begin{table*}[t]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{0.92}
+\caption{PBNS Adversarial Attack & Fault Specification Coverage Matrix (RQ4). 22 evaluated security specifications across two threat tiers. All cases are covered by compiled C core validation suites verifying fail-closed rejection without persistent state corruption.}
+\label{tab:rq3-attacks}
+\begin{tabularx}{\textwidth}{llXllc}
+\toprule
+\textbf{ID} & \textbf{Layer} & \textbf{Threat / Fault Specification} & \textbf{Expected Rejection} & \textbf{Covering Test Suite} & \textbf{Suite Result} \\
+\midrule
+\multicolumn{6}{l}{\textbf{Tier 1: Hostile Bearer and Network Path (Primary Threat Model)}} \\
+A-TLS-01 & TLS & Certificate with non-pinned SPKI & \texttt{PBNS\_ERR\_AUTHENTICATION} & \texttt{pbns-test-spki-pin} & \checkmark\ Pass \\
+A-TLS-02 & TLS & Certificate subjectAltName (SAN) mismatch & \texttt{PBNS\_ERR\_AUTHENTICATION} & \texttt{pbns-test-tls-policy} & \checkmark\ Pass \\
+A-TLS-03 & TLS & Adversary offers unsupported or weak cipher suite & \texttt{PBNS\_ERR\_CRYPTO} & \texttt{pbns-test-tls-policy} & \checkmark\ Pass \\
+A-PATH-01 & Transport & Mutated TLS ciphertext on CDC bearer & \texttt{PBNS\_ERR\_CRYPTO} & \texttt{pbns-test-tls-transport} & \checkmark\ Pass \\
+A-PATH-02 & Transport & Replayed TLS handshake record & \texttt{PBNS\_ERR\_REPLAY} & \texttt{pbns-test-tls-replay-endpoint} & \checkmark\ Pass \\
+A-PATH-03 & Transport & Premature connection termination during streaming & \texttt{PBNS\_ERR\_TRANSPORT} & \texttt{pbns-test-reconnect} & \checkmark\ Pass \\
+\midrule
+\multicolumn{6}{l}{\textbf{Tier 2: Authenticated Endpoint, Backend, and Framing Faults (Defense-in-Depth)}} \\
+A-FRAME-01 & Framing & Corrupted framing magic byte in record header & \texttt{PBNS\_ERR\_FORMAT} & \texttt{pbns-test-frame} & \checkmark\ Pass \\
+A-FRAME-02 & Framing & CRC32C checksum mismatch in frame payload & \texttt{PBNS\_ERR\_CRC} & \texttt{pbns-test-frame} & \checkmark\ Pass \\
+A-FRAME-03 & Framing & Frame length exceeding allocated receiver buffer & \texttt{PBNS\_ERR\_LIMIT} & \texttt{pbns-test-frame} & \checkmark\ Pass \\
+A-FRAME-04 & Framing & Premature frame delimiter (truncated payload) & \texttt{PBNS\_ERR\_FORMAT} & \texttt{pbns-test-frame} & \checkmark\ Pass \\
+A-TIME-01 & Time & Forged ECDSA P-256 signature on time assertion & \texttt{PBNS\_ERR\_AUTHENTICATION} & \texttt{pbns-test-trusted-time} & \checkmark\ Pass \\
+A-TIME-02 & Time & Replay of previously signed time assertion & \texttt{PBNS\_ERR\_REPLAY} & \texttt{pbns-test-trusted-time} & \checkmark\ Pass \\
+A-TIME-03 & Time & Time assertion violating monotonic progress & \texttt{PBNS\_ERR\_STATE} & \texttt{pbns-test-trusted-time} & \checkmark\ Pass \\
+A-REC-01 & Recovery & Forged signature on recovery manifest & \texttt{PBNS\_ERR\_AUTHENTICATION} & \texttt{pbns-test-recovery-manifest} & \checkmark\ Pass \\
+A-REC-02 & Recovery & Streaming chunk payload SHA-256 digest mismatch & \texttt{PBNS\_ERR\_CRYPTO} & \texttt{pbns-test-recovery-stream} & \checkmark\ Pass \\
+A-REC-03 & Recovery & Out-of-order chunk sequence (skipping sequence gap) & \texttt{PBNS\_ERR\_SEQUENCE} & \texttt{pbns-test-recovery-stream} & \checkmark\ Pass \\
+A-REC-04 & Recovery & Anti-rollback downgrade attempt (target version < NV) & \texttt{PBNS\_ERR\_STATE} & \texttt{pbns-test-anti-rollback} & \checkmark\ Pass \\
+A-REC-05 & Recovery & Unsigned or untrusted recovery UKI in memory & \texttt{EFI\_SECURITY\_VIOLATION} & \texttt{pbns-test-recovery-assurance} & \checkmark\ Pass \\
+A-ATT-01 & Attestation & Forged or corrupted TPM 2.0 Quote signature & \texttt{PBNS\_ERR\_AUTHENTICATION} & \texttt{pbns-test-attestation-quote} & \checkmark\ Pass \\
+A-ATT-02 & Attestation & Replay of previous quote with stale nonce & \texttt{PBNS\_ERR\_REPLAY} & \texttt{pbns-test-attestation-run} & \checkmark\ Pass \\
+A-ATT-03 & Attestation & Controlled baseline mismatch (modified PCR 0/4/7) & \texttt{PBNS\_ERR\_AUTHENTICATION} & \texttt{pbns-test-controlled-baseline} & \checkmark\ Pass \\
+A-ATT-04 & Attestation & Mutated COSE_Encrypt ciphertext or AAD & \texttt{PBNS\_ERR\_CRYPTO} & \texttt{pbns-test-encrypt} & \checkmark\ Pass \\
+\bottomrule
+\end{tabularx}
+\end{table*}

@@ -1,0 +1,32 @@
+## @file
+# PBNS TPM identity lifecycle probe.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsIdentityProbe
+  FILE_GUID                      = a3471f3a-d571-452e-80c8-93603734142b
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsIdentityProbe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  PbnsCoreLib
+  PbnsTpmIdentityLib
+  UefiApplicationEntryPoint
+  UefiBootServicesTableLib
+  UefiLib
+
+[Protocols]
+  gEfiLoadedImageProtocolGuid

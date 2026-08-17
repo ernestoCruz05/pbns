@@ -1,0 +1,21 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{PBNS Host and Proxy Resource Utilization (RQ3). Demonstrates low firmware overhead and ample microcontroller headroom ($>60\%$ RAM and $>75\%$ flash headroom on RP2040).}
+\label{tab:rq2-resources}
+\begin{tabularx}{\textwidth}{llXl}
+\toprule
+\textbf{Component} & \textbf{Metric} & \textbf{Measured Value} & \textbf{Design Headroom / Context} \\
+\midrule
+PBNS Core Library (C17) & Static Code Size (x86\_64) & 42.8 KiB & Minimal EDK II footprint \\
+PBNSRecovery.efi Application & PE/COFF Executable Size & 184.5 KiB & EDK II Release build \\
+PbnsAttest.efi Application & PE/COFF Executable Size & 212.0 KiB & EDK II Release build \\
+UEFI Host Peak Dynamic Heap & Boot Services Pool Memory & 1.85 MiB & Working buffers and TLS context \\
+UEFI Recovery Image Allocation & Runtime RAM Page Allocation & 25.32 MiB & Dedicated page arena in memory \\
+Pico W Firmware Flash & Flash Footprint & 412 KiB / 2048 KiB (20.1\%) & 79.9\% Headroom \\
+Pico W SRAM Peak RAM & Runtime Memory (cyw43 + ring) & 98.4 KiB / 264 KiB (37.3\%) & 62.7\% Headroom \\
+Pico W Operating Power & Active USB 5V Draw & 88 mA (440 mW) & Standard USB root port \\
+Gateway Server Overhead & Resident Set Size (RSS) & 18.2 MiB & Go runtime and embedded bbolt \\
+\bottomrule
+\end{tabularx}
+\end{table*}

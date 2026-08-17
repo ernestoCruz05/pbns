@@ -1,0 +1,31 @@
+## @file
+# PBNS boot configuration variable library.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsBootConfigLib
+  FILE_GUID                      = 4a84e8aa-99b9-488f-a6c5-d6f909af46e8
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsBootConfigLib
+
+[Sources]
+  PbnsBootConfigLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  DevicePathLib
+  PbnsLauncherPolicyLib
+
+[Guids]
+  gEfiGlobalVariableGuid
+  gPbnsBootConfigGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes

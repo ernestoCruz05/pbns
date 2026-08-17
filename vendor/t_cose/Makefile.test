@@ -1,0 +1,130 @@
+# Makefile.test -- Makefile for no-crypto test config for t_cose
+#
+# Copyright (c) 2019-2025, Laurence Lundblade. All rights reserved.
+# Copyright (c) 2020, Michael Eckel, Fraunhofer SIT.
+# Copyright (c) 2022, Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# See BSD-3-Clause license in README.md
+#
+
+
+# ---- General comment ----
+
+# This makefile is for t_cose with no crypto library. This
+# t_cose configuration is used for bring up on a new platform
+# and testing. No external crypto library is needed. The crypto
+# that it does use (e.g., SHA-256) is built-in.
+
+# Makefile.common, included below, contains the lists of library, test
+# and example object files that are invariant by crypto library.
+
+
+# ---- QCBOR location ----
+
+# This is for direct reference to QCBOR that is not installed in
+# /usr/local or some system location. The path may need to be adjusted
+# for your location of QCBOR.
+#QCBOR_DIR=../../QCBOR/master
+#QCBOR_INC=-I $(QCBOR_DIR)/inc
+#QCBOR_LIB=$(QCBOR_DIR)/libqcbor.a
+
+# This is for reference to QCBOR that is installed in /usr/local or in
+# some system location. This will typically use dynamic linking if
+# there is a libqcbor.so
+QCBOR_INC=-I /usr/local/include
+QCBOR_LIB=-lqcbor
+
+
+# ---- crypto configuration -----
+# Uses only the internal Brad Conte hash implementation that is bundled with t_cose
+CRYPTO_INC=-I crypto_adapters/b_con_hash
+CRYPTO_LIB=
+CRYPTO_CONFIG_OPTS=-DT_COSE_USE_B_CON_SHA256 
+CRYPTO_OBJ=crypto_adapters/t_cose_test_crypto.o crypto_adapters/b_con_hash/sha256.o
+CRYPTO_EXAMPLE_OBJ=examples/init_keys_test.o
+CRYPTO_TEST_OBJ=examples/init_keys_test.o
+
+
+# ---- other configuration ----
+# Use as needed. It has been used to disable features that aren't ready
+# or that aren't passing tests
+OTHER_OPTS=-DT_COSE_ENABLE_HASH_FAIL_TEST -DT_COSE_DISABLE_SIGN_VERIFY_TESTS 
+
+
+# ---- compiler configuration -----
+# This makefile uses a minimum of compiler flags so that it will
+# work out-of-the-box with a wide variety of compilers.  For example,
+# some compilers error out on some of the warnings flags gcc supports.
+# The $(CMD_LINE) variable allows passing in extra flags. This is
+# used on the stringent build script that is in
+# https://github.com/laurencelundblade/tdv.  This script is used
+# before pushes to master (though not yet through an automated build
+# process). See "warn:" below.
+C_OPTS=-Os -fPIC
+
+
+# ---- Aggregate includes and options ----
+INC=-I inc -I test -I src -I examples
+ALL_INC=$(INC) $(CRYPTO_INC) $(QCBOR_INC)
+CFLAGS=$(CMD_LINE) $(ALL_INC) $(C_OPTS) $(CRYPTO_CONFIG_OPTS) $(OTHER_OPTS)
+
+
+# ---- The build targets ----
+.PHONY: all clean warn
+
+all: libt_cose.a t_cose_test t_cose_examples
+
+# run "make warn" as a handy way to compile with the warning flags
+# used in the QCBOR release process. See C_OPTS above.
+warn:
+	make -f Makefile.test CMD_LINE="-Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wcast-qual"
+
+coverage:
+	make -f Makefile.test CMD_LINE="$(CMD_LINE) -fprofile-arcs -ftest-coverage" t_cose_cov
+
+# ---- Bring in common definitions of SRC_OBJ, TEST_OBJ, ... -----
+
+include Makefile.common
+
+
+# --- Finally, the things that actually get built ----
+
+libt_cose.a: $(SRC_OBJ) $(CRYPTO_OBJ)
+	ar -r $@ $^
+
+
+# The shared library which is not made by default because of platform
+# variability For example MacOS and Linux behave differently and some
+# IoT OS's don't support them at all.
+libt_cose.so: $(SRC_OBJ) $(CRYPTO_OBJ)
+	cc -shared $^ -o $@ $(CRYPTO_LIB) $(QCBOR_LIB)
+
+t_cose_test: main.o $(TEST_OBJ) $(CRYPTO_TEST_OBJ) libt_cose.a
+	cc -dead_strip -o $@ $^ $(QCBOR_LIB) $(CRYPTO_LIB)
+
+t_cose_cov: main.o $(SRC_OBJ) $(TEST_OBJ) $(CRYPTO_TEST_OBJ) libt_cose.a
+	cc -fprofile-arcs -ftest-coverage -o $@ $^ $(CRYPTO_LIB) $(QCBOR_LIB)
+
+crypto_adapters/t_cose_test_crypto.o: crypto_adapters/t_cose_test_crypto.c \
+                                      src/t_cose_crypto.h \
+                                      src/t_cose_util.h \
+                                      inc/t_cose/t_cose_standard_constants.h \
+                                      crypto_adapters/b_con_hash/sha256.h
+
+crypto_adapters/b_con_hash/sha256.o: crypto_adapters/b_con_hash/sha256.h
+
+examples/init_keys_test.o: 	examples/init_keys_test.c \
+				examples/init_keys.h \
+				$(PUBLIC_INTERFACE)
+
+t_cose_examples: $(EXAMPLE_OBJ) $(CRYPTO_EXAMPLE_OBJ) libt_cose.a
+	cc -o $@ $^ $(QCBOR_LIB) $(CRYPTO_LIB)
+
+
+clean:
+	rm -f $(SRC_OBJ) $(TEST_OBJ) $(CRYPTO_OBJ) $(CRYPTO_TEST_OBJ) $(EXAMPLE_OBJ) $(CRYPTO_EXAMPLE_OBJ) \
+         $(COV_FILES) t_cose_cov t_cose_examples libt_cose.so \
+        main.o t_cose_test libt_cose.a libt_cose.so
+

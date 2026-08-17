@@ -1,0 +1,25 @@
+## @file
+# Allocation-free portable PBNS launcher and boot-variable codec.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsLauncherPolicyLib
+  FILE_GUID                      = 66f28f07-a800-4de6-b345-94ce3b2201df
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsLauncherPolicyLib
+
+[Sources]
+  ../../../src/core/boot_config.c
+  ../../../src/core/crc32c.c
+  ../../../src/core/launcher.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings

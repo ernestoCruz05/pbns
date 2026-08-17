@@ -1,0 +1,42 @@
+/*
+ * t_cose_qcbor_gap.c
+ *
+ * Copyright (c) 2026, Laurence Lundblade. All rights reserved.
+ * Created by Laurence Lundblade on 5/29/23.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * See BSD-3-Clause license in README.md
+ */
+#include "t_cose_qcbor_gap.h"
+
+
+#if QCBOR_VERSION_MAJOR < 2
+
+#include "qcbor/qcbor_decode.h"
+
+
+/*
+ * Public Function. See t_cose_qcbor_gap.h
+ */
+void QCBORDecode_SaveCursor(QCBORDecodeContext *pMe,
+                            QCBORSavedDecodeCursor *cursor)
+{
+    cursor->Nesting = pMe->nesting;
+    cursor->offset  = (uint32_t)UsefulInputBuf_Tell(&(pMe->InBuf));
+    cursor->last_error = pMe->uLastError;
+}
+
+
+/*
+ * Public Function. See t_cose_qcbor_gap.h
+ */
+void QCBORDecode_RestoreCursor(QCBORDecodeContext *pMe,
+                               const QCBORSavedDecodeCursor *cursor)
+{
+    pMe->nesting = cursor->Nesting;
+    UsefulInputBuf_Seek(&(pMe->InBuf), cursor->offset);
+    pMe->uLastError = cursor->last_error;
+}
+
+#endif /* QCBOR_MAJOR_VERSION < 2 */

@@ -1,0 +1,25 @@
+## @file
+# PBNS UEFI COSE interoperability probe.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsCoseProbe
+  FILE_GUID                      = a0c21e64-6af7-4752-8a49-3d0f4f1b9400
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsCoseProbe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  PbnsCoseCryptoLib
+  UefiApplicationEntryPoint
+  UefiLib

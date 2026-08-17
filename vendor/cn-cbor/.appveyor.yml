@@ -1,0 +1,26 @@
+image:
+  - Visual Studio 2019
+
+platform:
+  - x64
+
+configuration:
+  - release
+  - debug
+
+environment:
+  matrix:
+    - OPTIONS: -DCN_CBOR_USE_CONTEXT=ON
+    - OPTIONS: -DCN_CBOR_USE_CONTEXT=OFF
+    - OPTIONS: -DCN_CBOR_NO_FLOATS=ON
+    - OPTIONS: -DCN_CBOR_ALIGN_READS=ON
+
+before_build:
+  - cmake -G "Visual Studio 16 2019" -DCN_CBOR_FATAL_WARNINGS=OFF %OPTIONS%
+
+build:
+  project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln
+
+test_script:
+  - cd dist\test\%CONFIGURATION%
+  - cbor_test.exe

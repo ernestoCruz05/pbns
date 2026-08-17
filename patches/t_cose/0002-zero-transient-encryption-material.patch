@@ -1,0 +1,148 @@
+diff --git a/src/t_cose_crypto.h b/src/t_cose_crypto.h
+index 8a6686e..0789fd8 100644
+--- a/src/t_cose_crypto.h
++++ b/src/t_cose_crypto.h
+@@ -182,6 +182,9 @@ extern "C" {
+  */
+ bool t_cose_crypto_is_algorithm_supported(int32_t cose_algorithm_id);
+ 
++/** Impede que o compilador elimine a limpeza de material criptográfico transitório. */
++void t_cose_crypto_secure_zero(struct q_useful_buf buffer);
++
+ /**
+  * \brief Returns the size of a signature given the key and algorithm.
+  *
+diff --git a/src/t_cose_encrypt_dec.c b/src/t_cose_encrypt_dec.c
+index 91a7ce1..8113ae3 100644
+--- a/src/t_cose_encrypt_dec.c
++++ b/src/t_cose_encrypt_dec.c
+@@ -138,7 +138,7 @@ t_cose_encrypt_dec_main_private(struct t_cose_encrypt_dec_ctx* me,
+                                 struct t_cose_parameter      **returned_parameters,
+                                 uint64_t                       tag_numbers[T_COSE_MAX_TAGS_TO_RETURN])
+ {
+-    enum t_cose_err_t              return_value;
++    enum t_cose_err_t              return_value = T_COSE_SUCCESS;
+     QCBORItem                      array_item;
+     QCBORError                     cbor_error;
+     uint64_t                       message_type;
+@@ -149,7 +149,8 @@ t_cose_encrypt_dec_main_private(struct t_cose_encrypt_dec_ctx* me,
+     struct q_useful_buf_c          cipher_text;
+     struct t_cose_alg_and_bits     ce_alg;
+     struct q_useful_buf_c          cek;
+-    struct t_cose_key              cek_key;
++    struct t_cose_key              cek_key = {0};
++    bool                           cek_key_owned = false;
+     MakeUsefulBufOnStack(          cek_buf, T_COSE_MAX_SYMMETRIC_KEY_LENGTH);
+     struct t_cose_parameter       *rcpnt_params_list;
+     struct t_cose_parameter       *all_params_list;
+@@ -351,6 +352,7 @@ t_cose_encrypt_dec_main_private(struct t_cose_encrypt_dec_ctx* me,
+         if(return_value != T_COSE_SUCCESS) {
+             goto Done;
+         }
++        cek_key_owned = true;
+ 
+     } else {
+        /* This never happens because of type determination above */
+@@ -432,9 +434,14 @@ t_cose_encrypt_dec_main_private(struct t_cose_encrypt_dec_ctx* me,
+     }
+     if (message_type != T_COSE_OPT_MESSAGE_TYPE_ENCRYPT0) {
+         t_cose_crypto_free_symmetric_key(cek_key);
++        cek_key_owned = false;
+     }
+ 
+ Done:
++    if(cek_key_owned) {
++        t_cose_crypto_free_symmetric_key(cek_key);
++    }
++    t_cose_crypto_secure_zero(cek_buf);
+     if(cbor_error != QCBOR_SUCCESS) {
+          return_value = qcbor_decode_error_to_t_cose_error(cbor_error, T_COSE_ERR_ENCRYPT_FORMAT);
+      }
+diff --git a/src/t_cose_encrypt_enc.c b/src/t_cose_encrypt_enc.c
+index 93c01cb..6224e01 100644
+--- a/src/t_cose_encrypt_enc.c
++++ b/src/t_cose_encrypt_enc.c
+@@ -44,7 +44,8 @@ t_cose_encrypt_enc_detached(struct t_cose_encrypt_enc *me,
+     struct t_cose_alg_and_bits   ce_alg;
+     Q_USEFUL_BUF_MAKE_STACK_UB(  cek_buffer, T_COSE_MAX_SYMMETRIC_KEY_LENGTH);
+     struct q_useful_buf_c        cek_bytes;
+-    struct t_cose_key            cek_handle;
++    struct t_cose_key            cek_handle = {0};
++    bool                         cek_handle_owned = false;
+     Q_USEFUL_BUF_MAKE_STACK_UB(  nonce_buffer, T_COSE_MAX_SYMMETRIC_KEY_LENGTH);
+     Q_USEFUL_BUF_MAKE_STACK_UB(  enc_struct_buffer, T_COSE_ENCRYPT_STRUCT_DEFAULT_SIZE);
+     const char                  *enc_struct_string;
+@@ -150,6 +151,9 @@ t_cose_encrypt_enc_detached(struct t_cose_encrypt_enc *me,
+     if(return_value != T_COSE_SUCCESS) {
+         goto Done;
+     }
++    if(!is_cose_encrypt0) {
++        cek_handle_owned = true;
++    }
+     /* At this point cek_handle has the encryption key for the AEAD */
+ 
+ 
+@@ -243,15 +247,21 @@ t_cose_encrypt_enc_detached(struct t_cose_encrypt_enc *me,
+             QCBOREncode_CloseArray(&cbor_encoder);
+         }
+         t_cose_crypto_free_symmetric_key(cek_handle);
++        cek_handle_owned = false;
+     }
+ 
+      /* ---- Close out the CBOR encoding ---- */
+     QCBOREncode_CloseArray(&cbor_encoder);
+     cbor_err = QCBOREncode_Finish(&cbor_encoder, encrypted_cose_message);
+     if (cbor_err != QCBOR_SUCCESS) {
+-        return qcbor_encode_error_to_t_cose_error(&cbor_encoder);
++        return_value = qcbor_encode_error_to_t_cose_error(&cbor_encoder);
++        goto Done;
+     }
+ 
+ Done:
++    if(cek_handle_owned) {
++        t_cose_crypto_free_symmetric_key(cek_handle);
++    }
++    t_cose_crypto_secure_zero(cek_buffer);
+     return return_value;
+ }
+diff --git a/src/t_cose_recipient_dec_esdh.c b/src/t_cose_recipient_dec_esdh.c
+index a77e3d2..cbe1261 100644
+--- a/src/t_cose_recipient_dec_esdh.c
++++ b/src/t_cose_recipient_dec_esdh.c
+@@ -296,5 +296,7 @@ t_cose_recipient_dec_esdh_cb_private(struct t_cose_recipient_dec *me_x,
+ done_free_ec:
+     t_cose_crypto_free_ec_key(ephemeral_key);
+ done:
++    t_cose_crypto_secure_zero(derived_secret_buf);
++    t_cose_crypto_secure_zero(kek_buffer);
+     return cose_result;
+ }
+diff --git a/src/t_cose_recipient_enc_esdh.c b/src/t_cose_recipient_enc_esdh.c
+index 3e0ef5f..9b17546 100644
+--- a/src/t_cose_recipient_enc_esdh.c
++++ b/src/t_cose_recipient_enc_esdh.c
+@@ -285,5 +285,7 @@ done_free_ec:
+     t_cose_crypto_free_ec_key(ephemeral_key);
+ 
+ done:
++    t_cose_crypto_secure_zero(derived_key_buf);
++    t_cose_crypto_secure_zero(kek_buf);
+     return return_value;
+ }
+diff --git a/src/t_cose_util.c b/src/t_cose_util.c
+index 9ddee63..227a524 100644
+--- a/src/t_cose_util.c
++++ b/src/t_cose_util.c
+@@ -935,3 +935,12 @@ t_cose_alg_is_non_aead(int32_t cose_algorithm_id)
+         return false;
+     }
+ }
++
++
++void t_cose_crypto_secure_zero(struct q_useful_buf buffer)
++{
++    volatile uint8_t *bytes = (volatile uint8_t *)buffer.ptr;
++    for(size_t index = 0; index < buffer.len; index++) {
++        bytes[index] = 0;
++    }
++}

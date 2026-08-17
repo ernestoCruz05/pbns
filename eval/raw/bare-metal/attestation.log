@@ -1,0 +1,8 @@
+[PBNS-BM1] Initiating TPM 2.0 Attestation sequence.
+[PBNS-BM1] TPM: AMD Platform Firmware TPM 2.0 (fTPM).
+[PBNS-BM1] Reading PCRs 0, 2, 4, 7 via TPM2_PCR_Read -> SHA256 Bank OK.
+[PBNS-BM1] Generating Quote via TPM2_Quote(AK_Handle, Nonce) -> Quote signature valid (ECC P-256).
+[PBNS-BM1] Capturing TCG2 Event Log: 37 events, 37,173 bytes.
+[PBNS-BM1] Encrypting attestation payload with COSE_Encrypt (AES-128-GCM / ECDH-ES-A128KW).
+[PBNS-BM1] Submitting payload to Gateway over UEFI TLS.
+[PBNS-BM1] Gateway Appraisal Receipt received: Status=TRUSTED, PCR_Match=TRUE, Receipt_Signature=VALID.

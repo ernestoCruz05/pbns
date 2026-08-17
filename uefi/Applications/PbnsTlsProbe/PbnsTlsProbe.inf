@@ -1,0 +1,36 @@
+## @file
+# Prova de ligação do cliente TLS UEFI PBNS sem efeitos externos.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTlsProbe
+  FILE_GUID                      = 929b0d58-7394-44fe-af8c-9f7eb71259af
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsTlsProbe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  IntrinsicLib
+  MemoryAllocationLib
+  MbedTlsLib
+  PbnsIdentityLib
+  PbnsTlsTransportCoreLib
+  PbnsTlsTransportLib
+  PbnsUefiPlatformLib
+  UefiApplicationEntryPoint
+  UefiLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -fstack-usage -I$(WORKSPACE)/pbns/uefi/Library/PbnsTlsTransportLib -I$(WORKSPACE)/CryptoPkg/Library/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter

@@ -1,0 +1,60 @@
+## @file
+# PBNS package declaration.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  DEC_SPECIFICATION              = 0x0001001B
+  PACKAGE_NAME                   = PbnsPkg
+  PACKAGE_GUID                   = 94ecaa78-5b76-45f5-be3f-43c77fe71ef6
+  PACKAGE_VERSION                = 0.1
+
+[Includes]
+  include
+  uefi/Library/PbnsUsbTransportLib
+  uefi/Library/PbnsBootConfigLib
+  uefi/Library/PbnsAntiRollbackLib
+  uefi/Library/PbnsAttestationClientLib
+  uefi/Library/PbnsEnrollmentClientLib
+  uefi/Library/PbnsRecoveryClientLib
+  uefi/Library/PbnsRecoveryServiceLib
+  uefi/Library/PbnsTss2TctiLib
+  uefi/Library/PbnsTpmIdentityLib
+  uefi/Library/PbnsInventoryLib
+  uefi/Library/PbnsTlsTransportLib
+  vendor/QCBOR/inc
+  vendor/t_cose/inc
+
+[LibraryClasses]
+  PbnsCoreLib|include/Library/PbnsCoreLib.h
+  PbnsAntiRollbackLib|uefi/Library/PbnsAntiRollbackLib/PbnsAntiRollbackLib.h
+  PbnsAttestationClientLib|uefi/Library/PbnsAttestationClientLib/PbnsAttestationClientLib.h
+  PbnsEnrollmentClientLib|uefi/Library/PbnsEnrollmentClientLib/PbnsEnrollmentClientLib.h
+  PbnsBootConfigLib|uefi/Library/PbnsBootConfigLib/PbnsBootConfigLib.h
+  PbnsCoseCryptoLib|include/Library/PbnsCoseCryptoLib.h
+  PbnsEnrollmentBaselineLib|include/Library/PbnsEnrollmentBaselineLib.h
+  PbnsIdentityLib|include/Library/PbnsIdentityLib.h
+  PbnsInventoryLib|uefi/Library/PbnsInventoryLib/PbnsInventoryLib.h
+  PbnsLauncherPolicyLib|include/pbns/launcher.h
+  PbnsMeasuredBootLib|include/Library/PbnsMeasuredBootLib.h
+  PbnsQcborLib|vendor/QCBOR/inc/qcbor/qcbor.h
+  PbnsRecoveryClientLib|uefi/Library/PbnsRecoveryClientLib/PbnsRecoveryClientLib.h
+  PbnsRecoveryServiceLib|uefi/Library/PbnsRecoveryServiceLib/PbnsRecoveryServiceLib.h
+  PbnsUefiPlatformLib|include/Library/PbnsUefiPlatformLib.h
+  PbnsUsbTransportLib|uefi/Library/PbnsUsbTransportLib/PbnsUsbTransportLib.h
+  PbnsTss2TctiLib|uefi/Library/PbnsTss2TctiLib/PbnsTss2Tcti.h
+  PbnsTpmIdentityLib|uefi/Library/PbnsTpmIdentityLib/PbnsTpmIdentityLib.h
+  PbnsTpmEkCertificateLib|include/Library/PbnsTpmEkCertificateLib.h
+  PbnsTrustedTimeLib|include/Library/PbnsTrustedTimeLib.h
+  PbnsTCoseLib|vendor/t_cose/inc/t_cose/t_cose_common.h
+  PbnsTlsTransportCoreLib|include/pbns/tls_transport.h
+  PbnsTlsTransportLib|uefi/Library/PbnsTlsTransportLib/PbnsTlsTransportLib.h
+  Tss2MuLib|uefi/Library/Tss2Compat/Tss2MuLib.h
+  Tss2SysLib|uefi/Library/Tss2Compat/Tss2SysLib.h
+
+[Guids]
+  gPbnsAntiRollbackVariableGuid = { 0xc5edf03f, 0x890a, 0x466d, { 0xb9, 0x6c, 0xd7, 0x20, 0xf2, 0x0e, 0x0e, 0x2b } }
+  gPbnsBootConfigGuid = { 0xb567e4cf, 0x27a1, 0x48cc, { 0xb4, 0xf6, 0xe1, 0xa5, 0xca, 0x44, 0x39, 0x19 } }
+  gPbnsSoftwareIdentityVariableGuid = { 0x54f8998a, 0x2f2b, 0x4df8, { 0x9a, 0xac, 0x4f, 0x8e, 0x8b, 0x0b, 0x53, 0x75 } }
+  gPbnsTpmIdentityVariableGuid = { 0xc84d80d4, 0x91f1, 0x47cb, { 0xa9, 0xca, 0x86, 0x53, 0x9a, 0xd4, 0xb4, 0x28 } }

@@ -1,0 +1,234 @@
+From ab77b7ebc336544ef89f19c0ada4a4ea65984284 Mon Sep 17 00:00:00 2001
+From: PBNS Research Artifact <pbns@example.invalid>
+Date: Mon, 27 Jul 2026 00:00:03 +0000
+Subject: [PATCH] Free OpenSSL EC temporary objects
+
+Release temporary EC key, group, point, and EVP references on every exit from
+the EC generation/import/export helpers. EVP_PKEY_set1_EC_KEY retains its own
+reference, so the local EC_KEY remains the adapter's responsibility.
+---
+ crypto_adapters/t_cose_openssl_crypto.c | 85 +++++++++++++++----------
+ 1 file changed, 52 insertions(+), 33 deletions(-)
+
+diff --git a/crypto_adapters/t_cose_openssl_crypto.c b/crypto_adapters/t_cose_openssl_crypto.c
+index 21678da..2cc7696 100644
+--- a/crypto_adapters/t_cose_openssl_crypto.c
++++ b/crypto_adapters/t_cose_openssl_crypto.c
+@@ -1494,11 +1494,12 @@ enum t_cose_err_t
+ t_cose_crypto_generate_ec_key(const int32_t       cose_ec_curve_id,
+                               struct t_cose_key  *key)
+ {
+-    EC_KEY   *ec_key;
+-    int       ossl_result;
+-    int       nid;
+-    EC_GROUP *ec_group;
+-    EVP_PKEY *evp_pkey;
++    EC_KEY          *ec_key = NULL;
++    int              ossl_result;
++    int              nid;
++    EC_GROUP        *ec_group = NULL;
++    EVP_PKEY        *evp_pkey = NULL;
++    enum t_cose_err_t return_value = T_COSE_ERR_FAIL;
+ 
+     switch (cose_ec_curve_id) {
+         case T_COSE_ELLIPTIC_CURVE_P_256:
+@@ -1516,37 +1517,43 @@ t_cose_crypto_generate_ec_key(const int32_t       cose_ec_curve_id,
+ 
+     ec_key = EC_KEY_new();
+     if(ec_key == NULL) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ec_group = EC_GROUP_new_by_curve_name(nid);
+     if(ec_group == NULL) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ossl_result = EC_KEY_set_group(ec_key, ec_group);
+     if(ossl_result != 1) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ossl_result = EC_KEY_generate_key(ec_key);
+     if(ossl_result != 1) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     evp_pkey = EVP_PKEY_new();
+     if(evp_pkey == NULL) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ossl_result = EVP_PKEY_set1_EC_KEY(evp_pkey, ec_key);
+     if(ossl_result != 1) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     key->key.ptr = evp_pkey;
++    evp_pkey = NULL;
++    return_value = T_COSE_SUCCESS;
+ 
+-    return T_COSE_SUCCESS;
++Done:
++    EVP_PKEY_free(evp_pkey);
++    EC_GROUP_free(ec_group);
++    EC_KEY_free(ec_key);
++    return return_value;
+ }
+ 
+ 
+@@ -2695,10 +2702,11 @@ t_cose_crypto_import_ec2_pubkey(const int32_t               cose_ec_curve_id,
+ {
+     int                       ossl_result;
+     int                       nid;
+-    EC_POINT                 *ec_point;
+-    EC_KEY                   *ec_key;
+-    EC_GROUP                 *ec_group;
+-    EVP_PKEY                 *evp_pkey;
++    EC_POINT                 *ec_point = NULL;
++    EC_KEY                   *ec_key = NULL;
++    EC_GROUP                 *ec_group = NULL;
++    EVP_PKEY                 *evp_pkey = NULL;
++    enum t_cose_err_t         return_value = T_COSE_ERR_FAIL;
+     uint8_t                   first_byte;
+     UsefulOutBuf_MakeOnStack( import_buf, T_COSE_EXPORT_PUBLIC_KEY_MAX_SIZE);
+     struct q_useful_buf_c     import_octets;
+@@ -2761,23 +2769,23 @@ t_cose_crypto_import_ec2_pubkey(const int32_t               cose_ec_curve_id,
+ 
+     ec_key = EC_KEY_new();
+     if(ec_key == NULL) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ec_group = EC_GROUP_new_by_curve_name(nid);
+     if(ec_group == NULL) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     // TODO: this and related are to be depreacted, so they say...
+     ossl_result = EC_KEY_set_group(ec_key, ec_group);
+     if(ossl_result != 1) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ec_point = EC_POINT_new(ec_group);
+     if(ec_point == NULL) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ossl_result = EC_POINT_oct2point(ec_group,
+@@ -2785,27 +2793,34 @@ t_cose_crypto_import_ec2_pubkey(const int32_t               cose_ec_curve_id,
+                                      import_octets.ptr, import_octets.len,
+                                      NULL);
+     if(ossl_result != 1) {
+-         return T_COSE_ERR_FAIL; // TODO: error code
+-     }
++        goto Done;
++    }
+ 
+     ossl_result = EC_KEY_set_public_key(ec_key, ec_point);
+     if(ossl_result != 1) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     evp_pkey = EVP_PKEY_new();
+     if(evp_pkey == NULL) {
+-         return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ossl_result = EVP_PKEY_set1_EC_KEY(evp_pkey, ec_key);
+     if(ossl_result != 1) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     key_handle->key.ptr = evp_pkey;
++    evp_pkey = NULL;
++    return_value = T_COSE_SUCCESS;
+ 
+-    return T_COSE_SUCCESS;
++Done:
++    EVP_PKEY_free(evp_pkey);
++    EC_POINT_free(ec_point);
++    EC_GROUP_free(ec_group);
++    EC_KEY_free(ec_key);
++    return return_value;
+ }
+ 
+ 
+@@ -2824,6 +2839,7 @@ t_cose_crypto_export_ec2_key(struct t_cose_key      key_handle,
+     EC_KEY               *ec_key;
+     const EC_POINT       *ec_point;
+     const EC_GROUP       *ec_group;
++    enum t_cose_err_t     return_value = T_COSE_ERR_FAIL;
+     uint8_t               export_buf[T_COSE_EXPORT_PUBLIC_KEY_MAX_SIZE];
+     size_t                export_len;
+     struct q_useful_buf_c export;
+@@ -2837,12 +2853,12 @@ t_cose_crypto_export_ec2_key(struct t_cose_key      key_handle,
+ 
+     ec_point = EC_KEY_get0_public_key(ec_key);
+     if(ec_point == NULL) {
+-        return T_COSE_ERR_FAIL; // TODO: error code
++        goto Done;
+     }
+ 
+     ec_group = EC_KEY_get0_group(ec_key);
+     if(ec_group == NULL) {
+-        return T_COSE_ERR_FAIL;
++        goto Done;
+     }
+ 
+     /* TODO: add support for compressed? */
+@@ -2873,7 +2889,7 @@ t_cose_crypto_export_ec2_key(struct t_cose_key      key_handle,
+             break;
+         /* The only other registered for EC2 is secp256k1 */
+         default:
+-            return T_COSE_ERR_FAIL;
++            goto Done;
+     }
+ 
+     switch(first_byte) {
+@@ -2882,7 +2898,7 @@ t_cose_crypto_export_ec2_key(struct t_cose_key      key_handle,
+             len      = (export_len - 1 ) / 2;
+             *y_coord = UsefulBuf_Copy(y_coord_buf, UsefulBuf_Tail(export, len));
+             if(q_useful_buf_c_is_null(*y_coord)) {
+-                return T_COSE_ERR_FAIL;
++                goto Done;
+             }
+             break;
+ 
+@@ -2901,14 +2917,17 @@ t_cose_crypto_export_ec2_key(struct t_cose_key      key_handle,
+             break;
+ 
+         default:
+-            return T_COSE_ERR_FAIL;
++            goto Done;
+     }
+     *x_coord = UsefulBuf_Copy(x_coord_buf, UsefulBuf_Head(export, len));
+     if(q_useful_buf_c_is_null(*x_coord)) {
+-        return T_COSE_ERR_FAIL;
++        goto Done;
+     }
++    return_value = T_COSE_SUCCESS;
+ 
+-    return T_COSE_SUCCESS;
++Done:
++    EC_KEY_free(ec_key);
++    return return_value;
+ }
+ 
+ 
+-- 
+2.54.0

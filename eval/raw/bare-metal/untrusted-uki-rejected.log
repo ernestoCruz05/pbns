@@ -1,0 +1,10 @@
+[PBNS-BM1] Boot service initialized.
+[PBNS-BM1] Host: AMD x86-64 (AMI Aptio V, Secure Boot Active).
+[PBNS-BM1] Microcontroller bridge detected on USB port 1 (VID=0xcafe, PID=0x4011).
+[PBNS-BM1] TLS connection established with Gateway via SPKI pinning.
+[PBNS-BM1] Streaming test candidate: 26,553,920 bytes (25.32 MiB, untrusted key)...
+[PBNS-BM1] Stream complete (SHA-256 digest verified).
+[PBNS-BM1] Invoking gBS->LoadImage from memory buffer...
+[PBNS-BM1] Vendor Secure Boot policy evaluation -> EFI_SECURITY_VIOLATION.
+[PBNS-BM1] SECURITY ALERT: StartImage aborted. Memory buffer freed.
+[PBNS-BM1] Returning control to UEFI Boot Manager (local OS boot preserved).

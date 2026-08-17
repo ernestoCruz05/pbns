@@ -1,0 +1,40 @@
+platform:
+  - x64
+
+image: Visual Studio 2019
+  
+configuration:
+  - Release
+#  - Debug   suppress this for now
+
+environment:
+  matrix:
+    - USE_CONTEXT: ON      
+      USE_EMBEDTLS: OFF
+
+    - USE_CONTEXT: OFF
+      USE_EMBEDTLS: OFF
+
+    - USE_CONTEXT: OFF
+      USE_EMBEDTLS: ON
+
+
+matrix:
+  fast_finish: true
+
+install:
+  - git submodule update --init --recursive
+  - git clone --depth 1 git://github.com/cose-wg/Examples Examples
+
+before_build:
+  - set PATH=c:\OpenSSL-v111-Win64\bin;%PATH%
+  - set OPENSSL_ROOT_DIR=c:\OpenSSL-v111-Win64
+  - set CMAKE_FRAMEWORK_PATH=c:\OpenSSL-v111-Win64
+  - cmake --version
+  - mkdir build
+  - cd build
+  - cmake -DCOSE_C_USE_CONTEXT=%USE_CONTEXT% -DCOSE_C_USE_MBEDTLS=%USE_EMBEDTLS% -DBUILD_SHARED_LIBS=OFF -DCOSE_C_INCLUDE_COUNTERSIGN=ON -DCOSE_C_INCLUDE_COUNTERSIGN1=ON -G "Visual Studio 16 2019" ..
+
+build_script:
+  - msbuild cose-c.sln
+  - ctest -C %CONFIGURATION%

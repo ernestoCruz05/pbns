@@ -1,0 +1,30 @@
+## @file
+# PBNS bounded UEFI USB CDC transport.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsUsbTransportLib
+  FILE_GUID                      = 94b19df5-19c5-4e36-8f14-b89cdf00907e
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsUsbTransportLib|UEFI_APPLICATION
+
+[Sources]
+  PbnsUsbTransportLib.c
+  PbnsUsbIoShim.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  PbnsUefiPlatformLib
+
+[Protocols]
+  gEfiUsbIoProtocolGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -DPBNS_UEFI_BUILD=1 -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings

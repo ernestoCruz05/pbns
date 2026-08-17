@@ -1,0 +1,46 @@
+## @file
+# Adaptadores UEFI para o inventário PBNS filtrado por privacidade.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsInventoryLib
+  FILE_GUID                      = 85161105-73e6-4057-a3a1-56c7c5fa9a6f
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsInventoryLib
+
+[Sources]
+  PbnsInventoryAdapterCore.c
+  PbnsInventoryLib.c
+  PbnsSmbios.c
+  PbnsPci.c
+  PbnsStorage.c
+  PbnsSecureBoot.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MbedTlsLib
+  MemoryAllocationLib
+  PbnsCoreLib
+
+[Protocols]
+  gEfiBlockIoProtocolGuid
+  gEfiPciIoProtocolGuid
+  gEfiTcg2ProtocolGuid
+
+[Guids]
+  gEfiGlobalVariableGuid
+  gEfiImageSecurityDatabaseGuid
+  gEfiSmbios3TableGuid
+  gEfiSmbiosTableGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include

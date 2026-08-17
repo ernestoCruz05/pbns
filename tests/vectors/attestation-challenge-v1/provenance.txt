@@ -1,0 +1,10 @@
+generator=gateway/internal/attestation/testdata/generate_challenge.go
+rebuild=cd pbns/gateway && go run ./internal/attestation/testdata/generate_challenge.go OUTPUT-DIR
+source_libraries=github.com/fxamacker/cbor/v2,github.com/veraison/go-cose
+profile=tag-18 canonical COSE_Sign1; protected exactly {1:-7,4:kid}; empty unprotected; canonical challenge payload; exact external AAD
+key=test-only P-256 public key derived from scalar documented only in generator; generated files contain no private key
+signed_sha256=5f67bf7db56770946f225ff43533fdf66b89b84846822f72a4c734a2bd2925ce
+public_der_sha256=dc0ce633dbcc913dafafa4b89ac44d8ce683fdfc3f60c8bdf21213b9f2b534ba
+external_aad_sha256=5a3c5a2ceb6698592909eb15aa57031f58f65d8ca34d1c2df51f3149b756f6d1
+issued_at_ns=1700000000000000000
+expires_at_ns=1700000300000000000

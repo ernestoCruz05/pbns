@@ -1,0 +1,37 @@
+#!/bin/bash
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    printf 'usage: %s /dev/<device>\n' "$0" >&2
+    exit 2
+fi
+device=$1
+case "$device" in
+    /dev/*) ;;
+    *) printf 'device must be an absolute /dev path\n' >&2; exit 1 ;;
+esac
+canonical=$(readlink -f -- "$device")
+if [ "$canonical" != "$device" ] || [ ! -b "$device" ]; then
+    printf 'device must be a canonical block-device path\n' >&2
+    exit 1
+fi
+model=$(lsblk -dn -o MODEL -- "$device" | tr -d '\n')
+size=$(lsblk -dn -o SIZE -- "$device" | tr -d '\n')
+path=$device
+printf 'PBNS write enable request\nmodel=%s\nsize=%s\npath=%s\n' \
+    "$model" "$size" "$path"
+printf 'Type the exact device path to enable writes: '
+IFS= read -r confirmation
+if [[ $confirmation == "$device" ]]; then
+    printf 'confirmed path=%s model=%s size=%s\n' "$path" "$model" "$size" \
+        >>/run/pbns/write-enable.log
+else
+    printf 'confirmation mismatch; writes remain disabled\n' >&2
+    exit 1
+fi
+blockdev --setrw "$device"
+if [ "$(blockdev --getro "$device")" -ne 0 ]; then
+    printf 'device remained read-only\n' >&2
+    exit 1
+fi
+printf 'PBNS writes enabled for %s\n' "$device"

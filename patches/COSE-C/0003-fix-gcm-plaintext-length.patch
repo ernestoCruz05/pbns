@@ -1,0 +1,41 @@
+From b9b643f77f635e3d4ad2e14299fd67a801504eed Mon Sep 17 00:00:00 2001
+From: PBNS Research Artifact <pbns@example.invalid>
+Date: Mon, 27 Jul 2026 00:00:02 +0000
+Subject: [PATCH] Preserve complete AES-GCM plaintext length
+
+EVP_DecryptFinal reports only bytes emitted by the final operation. Preserve
+the bytes emitted by EVP_DecryptUpdate and add the final count before exposing
+the authenticated plaintext.
+---
+ src/openssl.cpp | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/openssl.cpp b/src/openssl.cpp
+index 2fcfef4..7aa3d6c 100644
+--- a/src/openssl.cpp
++++ b/src/openssl.cpp
+@@ -335,6 +335,7 @@ bool AES_GCM_Decrypt(COSE_Enveloped *pcose,
+ 	int cbOut;
+ 	byte *rgbOut = nullptr;
+ 	int outl = 0;
++	int cbFinal = 0;
+ 	byte rgbIV[15] = {0};
+ 	const cn_cbor *pIV = nullptr;
+ 	const EVP_CIPHER *cipher;
+@@ -425,12 +426,12 @@ bool AES_GCM_Decrypt(COSE_Enveloped *pcose,
+ 	//  Check the result
+ 
+ 	CHECK_CONDITION(
+-		EVP_DecryptFinal(ctx, rgbOut + cbOut, &cbOut), COSE_ERR_DECRYPT_FAILED);
++		EVP_DecryptFinal(ctx, rgbOut + cbOut, &cbFinal), COSE_ERR_DECRYPT_FAILED);
+ 
+ 	EVP_CIPHER_CTX_free(ctx);
+ 
+ 	pcose->pbContent = rgbOut;
+-	pcose->cbContent = cbOut;
++	pcose->cbContent = (size_t)cbOut + (size_t)cbFinal;
+ 
+ 	return true;
+ }
+-- 
+2.51.0

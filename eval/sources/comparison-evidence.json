@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "comparison": [
+    {
+      "system": "Native EDK II NetworkPkg",
+      "citation": "uefi-spec",
+      "extraHardware": "None / NIC",
+      "networkStackInFirmware": "Yes (IPv4/IPv6/TCP/TLS)",
+      "trustTermination": "Firmware / NIC driver",
+      "servicesSupported": "HTTP Boot, PXE, PXE-TLS",
+      "bearerHostility": "Assumes trusted network / DHCP"
+    },
+    {
+      "system": "iPXE Firmware",
+      "citation": "ipxe",
+      "extraHardware": "None / NIC",
+      "networkStackInFirmware": "Yes (Monolithic stack in ROM)",
+      "trustTermination": "iPXE image",
+      "servicesSupported": "HTTPS Boot, SAN boot, Scripting",
+      "bearerHostility": "TLS authentication"
+    },
+    {
+      "system": "Intel AMT / vPro",
+      "citation": "intel-amt",
+      "extraHardware": "Out-of-band CSME silicon",
+      "networkStackInFirmware": "No (Isolated in CSME)",
+      "trustTermination": "Coprocessor (CSME)",
+      "servicesSupported": "KVM, IDE-R, Remote power",
+      "bearerHostility": "OOB Management network"
+    },
+    {
+      "system": "BMC / Redfish Host Interface",
+      "citation": "redfish-host-interface",
+      "extraHardware": "Server BMC SoC (ASPEED)",
+      "networkStackInFirmware": "No (Isolated in BMC)",
+      "trustTermination": "Coprocessor (BMC)",
+      "servicesSupported": "Server telemetry, Virtual media",
+      "bearerHostility": "Dedicated management LAN"
+    },
+    {
+      "system": "Platform Trust Co-processor (Apple T2 / Titan)",
+      "citation": "t2, titan",
+      "extraHardware": "Proprietary security silicon",
+      "networkStackInFirmware": "No (Isolated silicon)",
+      "trustTermination": "Dedicated crypto chip",
+      "servicesSupported": "Secure enclave, verified boot",
+      "bearerHostility": "Internal bus"
+    },
+    {
+      "system": "FIDO2 / CTAP USB Tokens",
+      "citation": "fido-ctap21",
+      "extraHardware": "USB Security Dongle",
+      "networkStackInFirmware": "No (No networking)",
+      "trustTermination": "Token hardware",
+      "servicesSupported": "User presence authentication",
+      "bearerHostility": "Local USB"
+    },
+    {
+      "system": "PBNS (This Work)",
+      "citation": "This Work",
+      "extraHardware": "Commodity MCU (Pico W)",
+      "networkStackInFirmware": "No (Host TLS only; no NIC)",
+      "trustTermination": "Host UEFI Firmware",
+      "servicesSupported": "Trusted Time, RAM UKI, Attestation",
+      "bearerHostility": "Untrusted hostile bearer (USB/WiFi/TCP)"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{0.92}
+\caption{Architectural Comparison of Pre-Boot Networking, Recovery, and Coprocessor Approaches (RQ5). PBNS provides wireless pre-boot access without requiring firmware Wi-Fi drivers or a host IP stack, while preserving independent cryptographic trust termination in UEFI.}
+\label{tab:rq4-comparison}
+\begin{tabularx}{\textwidth}{llp{3.2cm}lcX}
+\toprule
+\textbf{Approach} & \textbf{Required Hardware} & \textbf{Host Connectivity \& Security Stack} & \textbf{Pre-Boot Wi-Fi} & \textbf{Trust Termination} & \textbf{Local Storage Prerequisite} \\
+\midrule
+Native EDK II HTTP(S) & Supported NIC (Ethernet) & Full (IPv4/IPv6/DHCP/TCP/TLS) & Platform-specific & Host UEFI Firmware & None (Remote image retrieved) \\
+iPXE Payload & Supported NIC (Ethernet) & Full (Monolithic iPXE in ROM/app) & Limited / platform-specific & iPXE Payload & None (Remote image retrieved) \\
+UEFI USB-Ethernet & USB-Ethernet Dongle & Host CDC-ECM/NCM \& IP Stack & No (Wired only) & Host UEFI Firmware & None (Remote image retrieved) \\
+Signed Local Recovery & Local Storage & Full Linux Network Stack & Yes (Linux drivers) & Kernel / User-space & Complete recovery OS on local disk \\
+Signed USB Flash & USB Mass Storage & None (Local File I/O only) & N/A (Offline media) & Local Secure Boot & Physical USB recovery media supplied \\
+ESP-AT Transparent & External ESP MCU & Host TLS (No Host IP/TCP/DNS) & Yes (via ESP-AT) & Host TLS & None (Remote image retrieved) \\
+Intel AMT / CSME & CSME Silicon & Isolated in CSME (Out-of-band) & Platform-dependent & CSME Coprocessor & None (Proprietary OOB path) \\
+Server BMC (Redfish) & Server BMC SoC & Isolated in BMC (Out-of-band) & No (Dedicated LAN) & BMC Coprocessor & None (Dedicated server hardware) \\
+\midrule
+\textbf{PBNS (This Work)} & \textbf{Commodity MCU} & \textbf{USB CDC + TLS (No Host IP/TCP/DNS)} & \textbf{Yes (via Bridge)} & \textbf{Host UEFI Firmware} & \textbf{Small launcher on local disk (RAM stream)* } \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize \textsuperscript{*}Requires the PBNS launcher application to remain accessible on readable local storage or firmware-resident media.}
+\end{tabularx}
+\end{table*}

@@ -1,0 +1,30 @@
+## @file
+# PBNS verifier challenge and encrypted attestation client.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsAttestationClientLib
+  FILE_GUID                      = 9e220237-88e4-4d02-a145-83b4858a8810
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsAttestationClientLib
+
+[Sources]
+  PbnsAttestationClientLib.c
+
+[Packages]
+  CryptoPkg/CryptoPkg.dec
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  MbedTlsLib
+  PbnsCoreLib
+  PbnsCoseCryptoLib
+  PbnsTpmIdentityLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include

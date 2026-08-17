@@ -1,0 +1,43 @@
+## @file
+# PBNS persistent reduced-assurance software identity.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsIdentityLib
+  FILE_GUID                      = 96d81411-416c-4cb5-9af9-bf6c8bb0aa19
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsIdentityLib
+
+[Sources]
+  PbnsIdentityLib.c
+  PbnsIdentityRecord.c
+  PbnsRandomPolicy.c
+  PbnsRandomUefi.c
+  PbnsSoftwareIdentity.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MbedTlsLib
+  MemoryAllocationLib
+  PbnsCoreLib
+  PbnsQcborLib
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+
+[Guids]
+  gPbnsSoftwareIdentityVariableGuid
+
+[Protocols]
+  gEfiRngProtocolGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include

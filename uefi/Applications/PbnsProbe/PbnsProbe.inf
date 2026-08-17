@@ -1,0 +1,31 @@
+## @file
+# PBNS UEFI transport probe.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsProbe
+  FILE_GUID                      = 1dfd94de-7fef-44d2-9a00-3e10653c83b8
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsProbe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  PbnsCoreLib
+  PbnsIdentityLib
+  PbnsUefiPlatformLib
+  PbnsUsbTransportLib
+  Tss2SysLib
+  UefiApplicationEntryPoint
+  UefiLib

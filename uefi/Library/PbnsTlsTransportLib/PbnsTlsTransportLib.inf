@@ -1,0 +1,35 @@
+## @file
+# Adaptador UEFI para o transporte TLS portátil PBNS.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTlsTransportLib
+  FILE_GUID                      = a9241c0e-9005-4079-a703-ea4bb012d7b1
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsTlsTransportLib
+
+[Sources]
+  PbnsTlsCrt.c
+  PbnsTlsTransportContextRegionCore.c
+  PbnsTlsTransportLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  IntrinsicLib
+  MbedTlsLib
+  MemoryAllocationLib
+  PbnsIdentityLib
+  PbnsTlsTransportCoreLib
+  PbnsUefiPlatformLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -fstack-usage -DPBNS_EDK2 -I$(WORKSPACE)/CryptoPkg/Library/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter

@@ -1,0 +1,39 @@
+From 8a6f2eb51b1b5fdcb1bbce38516f4395476a33cf Mon Sep 17 00:00:00 2001
+From: PBNS Research Artifact <pbns@example.invalid>
+Date: Mon, 27 Jul 2026 00:00:01 +0000
+Subject: [PATCH] Implement declared enveloped content getter
+
+COSE_Enveloped_GetContent is declared in the public header but absent from
+the library. Implement it analogously to COSE_Encrypt_GetContent so callers
+can retrieve authenticated plaintext without accessing private structures.
+---
+ src/Encrypt.cpp | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/src/Encrypt.cpp b/src/Encrypt.cpp
+index ab79f12..231192b 100644
+--- a/src/Encrypt.cpp
++++ b/src/Encrypt.cpp
+@@ -870,6 +870,20 @@ errorReturn:
+ 	return false;
+ }
++byte *COSE_Enveloped_GetContent(HCOSE_ENVELOPED h,
++	size_t *pcbContent,
++	cose_errback *perror)
++{
++	COSE_Enveloped *cose = (COSE_Enveloped *)h;
++	if (!IsValidEnvelopedHandle(h) || (pcbContent == nullptr)) {
++		if (perror != nullptr) {
++			perror->err = COSE_ERR_INVALID_PARAMETER;
++		}
++		return nullptr;
++	}
++	*pcbContent = cose->cbContent;
++	return const_cast<byte *>(cose->pbContent);
++}
+ 
+ /*!
+  * @brief Set the application external data for authentication
+  *
+-- 
+2.51.0

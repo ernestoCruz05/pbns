@@ -1,0 +1,10 @@
+[PBNS-BM1] Boot service initialized.
+[PBNS-BM1] Host: AMD x86-64 (AMI Aptio V, Secure Boot Active).
+[PBNS-BM1] Microcontroller bridge detected on USB port 1 (VID=0xcafe, PID=0x4011).
+[PBNS-BM1] TLS connection established with Gateway via SPKI pinning.
+[PBNS-BM1] Streaming recovery image: 26,553,920 bytes (25.32 MiB)...
+[PBNS-BM1] Stream complete (48.12s, SHA-256 digest verified).
+[PBNS-BM1] Invoking gBS->LoadImage from memory buffer...
+[PBNS-BM1] Vendor Secure Boot policy evaluation -> EFI_SUCCESS.
+[PBNS-BM1] Invoking gBS->StartImage(Handle) -> Transferring execution to signed UKI kernel.
+[PBNS-BM1] OS Recovery Kernel started successfully.

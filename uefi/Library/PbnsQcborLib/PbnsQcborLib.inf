@@ -1,0 +1,30 @@
+## @file
+# Pinned upstream QCBOR library for PBNS UEFI consumers.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsQcborLib
+  FILE_GUID                      = 9d8fb24d-704d-49f3-b5fc-3cf0492a1ac1
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.6.1
+  LIBRARY_CLASS                  = PbnsQcborLib
+
+[Sources]
+  ../../../vendor/QCBOR/src/qcbor_encode.c
+  ../../../vendor/QCBOR/src/ieee754.c
+  ../../../vendor/QCBOR/src/qcbor_decode.c
+  ../../../vendor/QCBOR/src/qcbor_err_to_str.c
+  ../../../vendor/QCBOR/src/UsefulBuf.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -include string.h -include $(WORKSPACE)/pbns/uefi/Library/PbnsMemoryCompat.h -DUSEFULBUF_DISABLE_ALL_FLOAT -fno-lto

@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "suite": "PBNS-RQ3-Adversarial-Matrix",
+  "cases": [
+    {
+      "id": "A-FRAME-01",
+      "category": "Framing",
+      "target": "Host Framing Decoder",
+      "description": "Corrupted framing magic byte in record header",
+      "threat": "Adversary injects random or garbage bytes over CDC/USB",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_BAD_MAGIC",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-FRAME-02",
+      "category": "Framing",
+      "target": "Host Framing Decoder",
+      "description": "CRC32 checksum mismatch in frame payload",
+      "threat": "Adversary alters ciphertext or framing bytes in transit",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_CRC_MISMATCH",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-FRAME-03",
+      "category": "Framing",
+      "target": "Host Framing Decoder",
+      "description": "Frame length exceeding allocated receiver buffer",
+      "threat": "Buffer overflow attack via oversize frame length field",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_OVERFLOW",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-FRAME-04",
+      "category": "Framing",
+      "target": "Host Framing Decoder",
+      "description": "Premature frame delimiter (truncated COBS payload)",
+      "threat": "Malformed framing intended to desynchronize message parser",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_MALFORMED",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-TLS-01",
+      "category": "TLS",
+      "target": "UEFI TLS Transport Layer",
+      "description": "Gateway certificate SPKI mismatch (untrusted root)",
+      "threat": "Rogue gateway MITM attempting TLS impersonation",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_TLS_SPKI_MISMATCH",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-TLS-02",
+      "category": "TLS",
+      "target": "UEFI TLS Transport Layer",
+      "description": "Server Name Indication (SAN) domain mismatch",
+      "threat": "Adversary presents certificate for a different domain",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_TLS_SAN_MISMATCH",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-TLS-03",
+      "category": "TLS",
+      "target": "UEFI TLS Transport Layer",
+      "description": "Adversary offers unsupported/weak cipher suite",
+      "threat": "Cipher downgrade attack to break confidentiality",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_TLS_CIPHER_REJECTED",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-TIME-01",
+      "category": "Trusted Time",
+      "target": "Time Service Client",
+      "description": "Forged ECDSA P-256 signature on time assertion",
+      "threat": "Adversary attempts to manipulate firmware time interval",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_SIGNATURE_INVALID",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-TIME-02",
+      "category": "Trusted Time",
+      "target": "Time Service Client",
+      "description": "Replay of previously signed time assertion",
+      "threat": "Replay of valid historical timestamp with stale nonce",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_NONCE_MISMATCH",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-TIME-03",
+      "category": "Trusted Time",
+      "target": "Time Service Client",
+      "description": "Time assertion with wrong domain separation tag",
+      "threat": "Cross-service signature splice from recovery or attestation",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_DOMAIN_MISMATCH",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-REC-01",
+      "category": "Recovery",
+      "target": "Recovery Manifest & Stream Client",
+      "description": "Forged signature on recovery manifest",
+      "threat": "Adversary attempts to authorize rogue kernel image",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_MANIFEST_SIGNATURE_INVALID",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-REC-02",
+      "category": "Recovery",
+      "target": "Recovery Stream Client",
+      "description": "Streaming chunk payload SHA-256 digest mismatch",
+      "threat": "Adversary alters in-flight recovery UKI bytes",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_ARTIFACT_DIGEST_MISMATCH",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-REC-03",
+      "category": "Recovery",
+      "target": "Recovery Stream Client",
+      "description": "Out-of-order chunk sequence (skipping sequence 1 to 2)",
+      "threat": "Adversary attempts chunk reordering / truncation injection",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_SEQUENCE_GAP",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-REC-04",
+      "category": "Recovery",
+      "target": "Anti-Rollback Policy Manager",
+      "description": "Anti-rollback downgrade attempt (target version < NV)",
+      "threat": "Adversary serves valid historical image with known CVEs",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_ROLLBACK_REJECTED",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-REC-05",
+      "category": "Recovery",
+      "target": "Memory-Source LoadImage",
+      "description": "Unsigned or untrusted recovery UKI in memory",
+      "threat": "Adversary attempts to boot untrusted image via valid manifest",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "EFI_SECURITY_VIOLATION",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-ATT-01",
+      "category": "Attestation",
+      "target": "Attestation Gateway Verifier",
+      "description": "Forged or corrupted TPM 2.0 Quote signature",
+      "threat": "Adversary attempts to spoof healthy platform state",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_QUOTE_INVALID",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-ATT-02",
+      "category": "Attestation",
+      "target": "Attestation Gateway Verifier",
+      "description": "Replay of previous quote with stale nonce",
+      "threat": "Adversary replays historical quote to hide malware",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_NONCE_REPLAY",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-ATT-03",
+      "category": "Attestation",
+      "target": "Attestation Gateway Verifier",
+      "description": "Controlled baseline mismatch (modified PCR 0/4/7)",
+      "threat": "Compromised firmware/bootloader attempting to pass attestation",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_BASELINE_MISMATCH",
+      "executionPrevented": true,
+      "stateModified": false
+    },
+    {
+      "id": "A-ATT-04",
+      "category": "Attestation",
+      "target": "Attestation Evidence Decryptor",
+      "description": "Mutated COSE-Encrypt ciphertext or AAD",
+      "threat": "Tampering with encrypted measured-boot event log",
+      "expectedOutcome": "REJECT_FAIL_CLOSED",
+      "expectedErrorCode": "PBNS_ERR_COSE_DECRYPT_FAIL",
+      "executionPrevented": true,
+      "stateModified": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+## @file
+# PBNS t_cose adapter for EDK II Mbed TLS and identity callbacks.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsCoseCryptoLib
+  FILE_GUID                      = 47c77c9c-2262-4e1a-bb4e-3fd5bc96c704
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsCoseCryptoLib
+
+[Sources]
+  PbnsCoseCryptoLib.c
+  PbnsCoseCryptoInternal.h
+  PbnsTcoseCrypto.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  MbedTlsLib
+  MemoryAllocationLib
+  PbnsCoreLib
+  PbnsTCoseLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -DT_COSE_DISABLE_ES384 -DT_COSE_DISABLE_ES512 -DT_COSE_DISABLE_PS256 -DT_COSE_DISABLE_PS384 -DT_COSE_DISABLE_PS512 -DT_COSE_DISABLE_COSE_SIGN -DT_COSE_DISABLE_SHORT_CIRCUIT_SIGN -I$(WORKSPACE)/pbns/build/uefi-t-cose/src -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include

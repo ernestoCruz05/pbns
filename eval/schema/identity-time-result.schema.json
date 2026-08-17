@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pbns.local/schema/pbns-identity-time-result-v1",
+  "title": "pbns-identity-time-result-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "evidence_class",
+    "identity_mode",
+    "assurance",
+    "recorded_utc",
+    "timing_ms",
+    "sha256"
+  ],
+  "properties": {
+    "schema": {"const": "pbns-identity-time-result-v1"},
+    "evidence_class": {
+      "enum": [
+        "hosted",
+        "emulated-system-local-only",
+        "emulated-system-with-physical-proxy",
+        "physical-platform"
+      ]
+    },
+    "identity_mode": {"enum": ["software-reduced", "tpm"]},
+    "assurance": {
+      "enum": ["software", "tpm-unverified-ek", "tpm-verified"]
+    },
+    "recorded_utc": {"type": "string", "format": "date-time"},
+    "platform": {
+      "type": "object",
+      "additionalProperties": {"type": ["string", "integer", "boolean"]}
+    },
+    "timing_ms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_local",
+        "init_crypto",
+        "begin_exchange",
+        "proof_crypto",
+        "complete_exchange",
+        "enrollment_total",
+        "trusted_time_total"
+      ],
+      "properties": {
+        "baseline_local": {"type": "integer", "minimum": 0},
+        "init_crypto": {"type": "integer", "minimum": 0},
+        "begin_exchange": {"type": "integer", "minimum": 0},
+        "proof_crypto": {"type": "integer", "minimum": 0},
+        "complete_exchange": {"type": "integer", "minimum": 0},
+        "enrollment_total": {"type": "integer", "minimum": 0},
+        "trusted_time_total": {"type": "integer", "minimum": 0}
+      }
+    },
+    "trusted_time_interval_width_ns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": {"enum": ["pass", "rejected", "not-run"]}
+    }
+  }
+}

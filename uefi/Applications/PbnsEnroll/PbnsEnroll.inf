@@ -1,0 +1,49 @@
+## @file
+# PBNS controlled-enrollment UEFI application.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsEnroll
+  FILE_GUID                      = 31d86129-6baa-4f7d-a746-fab9d61fd614
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsEnroll.c
+  PbnsDeploymentTrustBuild.c
+  PbnsEnrollmentTrustBuild.c
+
+[Packages]
+  CryptoPkg/CryptoPkg.dec
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  MbedTlsLib
+  MemoryAllocationLib
+  PbnsCoreLib
+  PbnsCoseCryptoLib
+  PbnsEnrollmentBaselineLib
+  PbnsEnrollmentClientLib
+  PbnsIdentityLib
+  PbnsMeasuredBootLib
+  PbnsQcborLib
+  PbnsTpmIdentityLib
+  PbnsUefiPlatformLib
+  PbnsUsbTransportLib
+  UefiApplicationEntryPoint
+  UefiBootServicesTableLib
+  UefiLib
+
+[Protocols]
+  gEfiLoadedImageProtocolGuid
+  gEfiSimpleFileSystemProtocolGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include -I$(PBNS_DEPLOYMENT_GENERATED_ABS) -I$(PBNS_ENROLLMENT_GENERATED_ABS)

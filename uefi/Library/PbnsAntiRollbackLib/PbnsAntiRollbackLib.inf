@@ -1,0 +1,38 @@
+## @file
+# PBNS explicit TPM/NVRAM anti-rollback adapters.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsAntiRollbackLib
+  FILE_GUID                      = 3fd219f7-a991-4bd9-9cd0-fc0f80f0c6de
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsAntiRollbackLib
+
+[Sources]
+  PbnsAntiRollbackNvram.c
+  PbnsAntiRollbackTpm.c
+  PbnsRecoveryPolicyWire.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MbedTlsLib
+  PbnsCoreLib
+  PbnsQcborLib
+  Tss2MuLib
+  Tss2SysLib
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+
+[Guids]
+  gPbnsAntiRollbackVariableGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include -I$(WORKSPACE)/pbns/uefi/Library/Tss2Compat -I$(WORKSPACE)/pbns/.deps/tpm2-tss/include -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-unused-parameter -Wno-missing-prototypes

@@ -1,0 +1,82 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.cbor
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+a.bat
+clang-format.bat
+
+# Debug files
+*.dSYM/
+
+# emacs files
+*#
+*~
+\#*
+
+Debug
+Release
+
+# CMAKE FILES
+CMakeFiles
+CMakeCache.txt
+Makefile
+build
+build-*
+
+# Visual Studio files
+*.sdf
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.opensdf
+*.VC.db
+*.VC.opendb
+.vs
+.vscode
+CMakeSettings.json
+
+# CMake and CTest directories
+project_cn-cbor-prefix
+project_mbedtls-prefix
+Testing
+dist
+test/test.cbor
+*.tcl
+CMakeLists.txt.user
+
+
+# Coverity
+cov-int
+
+# Doxygen
+html
+latex
+doxygen.bat

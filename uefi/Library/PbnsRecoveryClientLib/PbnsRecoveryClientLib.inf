@@ -1,0 +1,23 @@
+## @file
+# Bounded PBNS recovery orchestration state machine.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsRecoveryClientLib
+  FILE_GUID                      = 225291a6-1317-472d-aaeb-153f03db33ef
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsRecoveryClientLib
+
+[Sources]
+  PbnsRecoveryClientLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-unused-parameter -Wno-missing-prototypes

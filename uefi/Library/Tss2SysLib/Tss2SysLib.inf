@@ -1,0 +1,58 @@
+## @file
+# Audited tpm2-tss 4.1.3 SYS subset for firmware.
+#
+# SPDX-License-Identifier: BSD-2-Clause
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = Tss2SysLib
+  FILE_GUID                      = 22611a09-57e5-4b58-81e8-e25f9c9283bb
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 4.1.3
+  LIBRARY_CLASS                  = Tss2SysLib
+
+[Sources]
+  ../../../.deps/tpm2-tss/src/tss2-sys/sysapi_util.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_GetContextSize.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_GetCpBuffer.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Initialize.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Finalize.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Execute.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_SetCmdAuths.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_GetRspAuths.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_CreatePrimary.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Create.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Load.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_LoadExternal.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Sign.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Certify.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_ActivateCredential.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_GetRandom.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_GetCapability.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_ReadPublic.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_FlushContext.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_NV_DefineSpace.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_NV_ReadPublic.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_NV_Read.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_NV_UndefineSpace.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_NV_Write.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_PCR_Read.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_Quote.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_PolicyAuthorize.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_PolicyCpHash.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_PolicyNV.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_PolicyNvWritten.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_StartAuthSession.c
+  ../../../.deps/tpm2-tss/src/tss2-sys/api/Tss2_Sys_VerifySignature.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  Tss2MuLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -include string.h -include $(WORKSPACE)/pbns/uefi/Library/PbnsMemoryCompat.h -I$(WORKSPACE)/pbns/uefi/Library/Tss2Compat -I$(WORKSPACE)/pbns/uefi/ThirdParty/Tss2Compat -I$(WORKSPACE)/pbns/.deps/tpm2-tss/include/tss2 -I$(WORKSPACE)/pbns/.deps/tpm2-tss/src -DMAXLOGLEVEL=0 -DDISABLE_VENDOR -DDISABLE_WEAK_CRYPTO -U__linux__ -U__unix__ -fno-builtin-memcpy -fno-builtin-memmove -fno-builtin-memset

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pbns.local/schema/recovery-result-v1.json",
+  "title": "PBNS recovery checkpoint result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "evidence_class", "status", "platform", "checks",
+    "disk_before_sha256", "disk_after_sha256", "limitations"
+  ],
+  "properties": {
+    "schema": { "const": "pbns-recovery-result-v1" },
+    "evidence_class": { "enum": ["hosted", "emulated-system", "physical-platform"] },
+    "status": { "$ref": "#/$defs/status" },
+    "platform": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "checks": {
+      "type": "object", "additionalProperties": false,
+      "required": ["launcher", "manifest", "stream", "anti-rollback", "uki-policy", "secureboot-memory-load", "disk-immutability", "normal-pico-absent", "physical-recovery"],
+      "properties": {
+        "launcher": { "$ref": "#/$defs/status" }, "manifest": { "$ref": "#/$defs/status" },
+        "stream": { "$ref": "#/$defs/status" }, "anti-rollback": { "$ref": "#/$defs/status" },
+        "uki-policy": { "$ref": "#/$defs/status" }, "secureboot-memory-load": { "$ref": "#/$defs/status" },
+        "disk-immutability": { "$ref": "#/$defs/status" }, "normal-pico-absent": { "$ref": "#/$defs/status" },
+        "physical-recovery": { "$ref": "#/$defs/status" }
+      }
+    },
+    "disk_before_sha256": { "$ref": "#/$defs/optionalDigest" },
+    "disk_after_sha256": { "$ref": "#/$defs/optionalDigest" },
+    "nv_version_before": { "type": ["integer", "null"], "minimum": 0 },
+    "nv_version_after": { "type": ["integer", "null"], "minimum": 0 },
+    "secure_boot_enabled": { "type": ["boolean", "null"] },
+    "setup_mode": { "type": ["boolean", "null"] },
+    "limitations": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 512 }, "uniqueItems": true },
+    "recorded_utc": { "type": "string", "format": "date-time" },
+    "ovmf_code_sha256": { "$ref": "#/$defs/digest" },
+    "ovmf_variables_sha256": { "$ref": "#/$defs/digest" },
+    "artifacts": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "signed-trusted": { "$ref": "#/$defs/artifact" },
+        "unsigned-untrusted": { "$ref": "#/$defs/artifact" },
+        "truncated": { "$ref": "#/$defs/artifact" }
+      }
+    },
+    "cases": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "signed-trusted": { "$ref": "#/$defs/case" }, "unsigned-untrusted": { "$ref": "#/$defs/case" },
+        "truncated": { "$ref": "#/$defs/case" }, "gateway-interruption": { "$ref": "#/$defs/case" },
+        "forged-manifest": { "$ref": "#/$defs/case" }, "forged-digest": { "$ref": "#/$defs/case" },
+        "forged-chunk": { "$ref": "#/$defs/case" }, "downgrade": { "$ref": "#/$defs/case" },
+        "normal-launcher": { "$ref": "#/$defs/case" }, "pico-absent": { "$ref": "#/$defs/case" }
+      }
+    }
+  },
+  "$defs": {
+    "status": { "enum": ["pass", "fail", "blocked", "not-run"] },
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "optionalDigest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+    "artifact": {
+      "type": "object", "additionalProperties": false, "required": ["sha256", "size"],
+      "properties": { "sha256": { "$ref": "#/$defs/digest" }, "size": { "type": "integer", "minimum": 1 } }
+    },
+    "case": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "artifact_sha256", "nv_version_before", "nv_version_after", "disk_before_sha256", "disk_after_sha256"],
+      "properties": {
+        "status": { "$ref": "#/$defs/status" }, "artifact_sha256": { "$ref": "#/$defs/optionalDigest" },
+        "nv_version_before": { "type": "integer", "minimum": 0 }, "nv_version_after": { "type": "integer", "minimum": 0 },
+        "disk_before_sha256": { "$ref": "#/$defs/digest" }, "disk_after_sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

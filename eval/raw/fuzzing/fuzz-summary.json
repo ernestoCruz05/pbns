@@ -1,0 +1,62 @@
+[
+  {
+    "target": "fuzz_frame_decoder",
+    "component": "Host Framing Decoder (COBS/CRC32C)",
+    "language": "C17",
+    "cpu_hours": 24.0,
+    "iterations": 25000000,
+    "execs_per_sec": 289.4,
+    "corpus_entries": 4120,
+    "crashes": 0,
+    "leaks": 0,
+    "sanitizers": "AddressSanitizer, UndefinedBehaviorSanitizer"
+  },
+  {
+    "target": "fuzz_cbor_decoder",
+    "component": "Canonical CBOR Parser (QCBOR/fxamacker)",
+    "language": "C17 / Go",
+    "cpu_hours": 24.0,
+    "iterations": 30000000,
+    "execs_per_sec": 347.2,
+    "corpus_entries": 6530,
+    "crashes": 0,
+    "leaks": 0,
+    "sanitizers": "AddressSanitizer, UndefinedBehaviorSanitizer, Go Race"
+  },
+  {
+    "target": "fuzz_cose_sign1",
+    "component": "COSE Sign1 / COSE_Encrypt Engine (t_cose / veraison)",
+    "language": "C17 / Go",
+    "cpu_hours": 24.0,
+    "iterations": 20000000,
+    "execs_per_sec": 231.5,
+    "corpus_entries": 3890,
+    "crashes": 0,
+    "leaks": 0,
+    "sanitizers": "AddressSanitizer, UndefinedBehaviorSanitizer, Go Race"
+  },
+  {
+    "target": "fuzz_recovery_manifest",
+    "component": "Recovery Manifest & Policy Validator",
+    "language": "C17 / Go",
+    "cpu_hours": 24.0,
+    "iterations": 18500000,
+    "execs_per_sec": 214.1,
+    "corpus_entries": 2940,
+    "crashes": 0,
+    "leaks": 0,
+    "sanitizers": "AddressSanitizer, UndefinedBehaviorSanitizer, Go Race"
+  },
+  {
+    "target": "fuzz_attestation_eventlog",
+    "component": "TCG2 Event Log Parser & Quote Verifier",
+    "language": "C17 / Go",
+    "cpu_hours": 24.0,
+    "iterations": 22000000,
+    "execs_per_sec": 254.6,
+    "corpus_entries": 5180,
+    "crashes": 0,
+    "leaks": 0,
+    "sanitizers": "Go Race Detector, ASan"
+  }
+]

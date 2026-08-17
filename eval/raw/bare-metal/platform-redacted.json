@@ -1,0 +1,23 @@
+{
+  "host_id": "BM-1",
+  "cpu_model": "AMD x86-64 Processor",
+  "firmware_vendor": "American Megatrends Inc. (AMI)",
+  "firmware_version": "Aptio V UEFI 2.7+",
+  "secure_boot_status": "Enabled (Active Enforcement)",
+  "setup_mode": "Disabled",
+  "tpm_type": "AMD Platform Firmware TPM 2.0 (fTPM)",
+  "tpm_spec_version": "2.0 (Revision 1.59)",
+  "tpm_pcr_banks": [
+    "SHA-256"
+  ],
+  "evaluated_pcrs": [
+    0,
+    2,
+    4,
+    7
+  ],
+  "connectivity_bridge": "Raspberry Pi Pico W",
+  "bridge_microcontroller": "RP2040 (dual ARM Cortex-M0+)",
+  "bridge_wireless_chip": "Infineon CYW43439 (802.11b/g/n)",
+  "bridge_interface": "USB CDC-ACM (Full-Speed 12 Mbps)"
+}

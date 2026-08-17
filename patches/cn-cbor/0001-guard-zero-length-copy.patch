@@ -1,0 +1,27 @@
+From 4bd231a30e97d2294edc984361e90f484459d0fd Mon Sep 17 00:00:00 2001
+From: PBNS Research Artifact <pbns@example.invalid>
+Date: Mon, 27 Jul 2026 00:00:05 +0000
+Subject: [PATCH] Guard zero-length CBOR string copies
+
+Do not pass a null string pointer to memcpy when encoding a valid empty
+byte or text string. The encoded representation and reported length are unchanged.
+
+---
+ src/cn-encoder.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/cn-encoder.c b/src/cn-encoder.c
+index 8ce762c..47c7def 100644
+--- a/src/cn-encoder.c
++++ b/src/cn-encoder.c
+@@ -312,7 +312,7 @@ bool _encoder_visitor(const cn_cbor *cb, int depth, void *context)
+ 		case CN_CBOR_BYTES:
+ 			CHECK(_write_positive(ws, cb->type, cb->length));
+ 			ensure_writable(cb->length);
+-			if (ws->buf) {
++			if (ws->buf && cb->length > 0) {
+ 				memcpy(ws->buf + ws->offset, cb->v.str, cb->length);
+ 			}
+ 			ws->offset += cb->length;
+-- 
+2.54.0

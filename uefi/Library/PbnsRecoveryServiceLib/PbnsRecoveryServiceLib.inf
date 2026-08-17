@@ -1,0 +1,45 @@
+## @file
+# Adaptador de serviço PBNS para recuperação autenticada em direto.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsRecoveryServiceLib
+  FILE_GUID                      = 8a89e0c2-7b0e-4623-95b3-b52bce8a399a
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsRecoveryServiceLib
+
+[Sources]
+  PbnsRecoveryServiceLib.c
+  PbnsRecoveryRollbackUefi.c
+  PbnsRecoveryStreamUefi.c
+  PbnsRecoveryTrust.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MemoryAllocationLib
+  MbedTlsLib
+  PbnsAntiRollbackLib
+  PbnsCoreLib
+  PbnsCoseCryptoLib
+  PbnsIdentityLib
+  PbnsQcborLib
+  PbnsTrustedTimeLib
+  PbnsTpmIdentityLib
+  PbnsTss2TctiLib
+  PbnsTlsTransportLib
+  PbnsUefiPlatformLib
+  PbnsUsbTransportLib
+  Tss2MuLib
+  Tss2SysLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -I$(WORKSPACE)/pbns/uefi/Library/PbnsTlsTransportLib -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include -I$(WORKSPACE)/pbns/uefi/Library/Tss2Compat -I$(WORKSPACE)/pbns/.deps/tpm2-tss/include -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings -Wno-discarded-qualifiers -Wno-unused-parameter -Wno-missing-prototypes

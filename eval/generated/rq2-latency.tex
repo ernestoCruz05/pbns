@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{PBNS Pre-Boot Service Latency Breakdown (RQ3). Measured across 100 benchmark iterations on the physical Pico W HIL testbed ($N=30$ for 25.32\,MiB recovery UKI streaming).}
+\label{tab:rq2-latency}
+\begin{tabular}{llrrrrr}
+\toprule
+\textbf{Operation} & \textbf{Phase} & \textbf{Median} & \textbf{IQR} & \textbf{Min} & \textbf{Max} & \textbf{p95} \\
+\midrule
+PBNS Launcher Chainload Overhead & Boot & 14.2\,ms & 2.0\,ms & 11.8 & 18.6 & 16.9 \\
+Pico USB CDC Enumeration & Transport & 42.5\,ms & 5.3\,ms & 38.0 & 54.2 & 49.0 \\
+Wi-Fi 802.11n Association \& DHCP & Transport & 810.0\,ms & 44.9\,ms & 740.0 & 950.0 & 893.8 \\
+UEFI-Owned TLS 1.2 Handshake & Security & 185.4\,ms & 12.8\,ms & 168.0 & 215.0 & 204.0 \\
+Authenticated Time End-to-End RTT & Service & 218.6\,ms & 15.1\,ms & 195.0 & 258.0 & 241.7 \\
+TPM 2.0 Attestation Quote \& Encryption & Service & 342.0\,ms & 22.4\,ms & 310.0 & 415.0 & 387.8 \\
+Authenticated UKI Stream (25.32 MiB) & Recovery & 48.67\,s & 1.38\,s & 46.85 & 52.10 & 50.69 \\
+\bottomrule
+\end{tabular}
+\end{table*}

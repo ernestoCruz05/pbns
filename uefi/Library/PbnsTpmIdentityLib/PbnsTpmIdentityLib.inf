@@ -1,0 +1,43 @@
+## @file
+# Persistent TPM-backed PBNS identity.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTpmIdentityLib
+  FILE_GUID                      = c82aa1d0-816e-4991-9c66-38945fba7e73
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 0.1
+  LIBRARY_CLASS                  = PbnsTpmIdentityLib
+
+[Sources]
+  PbnsTpmIdentityLib.c
+  PbnsTpmIdentityUefi.c
+  PbnsTpmPolicy.c
+  PbnsTpmQuoteCore.c
+  PbnsTpmStorage.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  MemoryAllocationLib
+  MbedTlsLib
+  PbnsCoreLib
+  PbnsQcborLib
+  PbnsTpmEkCertificateLib
+  PbnsTss2TctiLib
+  Tss2SysLib
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+
+[Guids]
+  gPbnsTpmIdentityVariableGuid
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/Include -I$(WORKSPACE)/CryptoPkg/Library/MbedTlsLib/mbedtls/include -I$(WORKSPACE)/pbns/uefi/Library/Tss2Compat -I$(WORKSPACE)/pbns/.deps/tpm2-tss/include -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings

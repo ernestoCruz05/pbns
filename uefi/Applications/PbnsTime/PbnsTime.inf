@@ -1,0 +1,28 @@
+## @file
+# PBNS UEFI trusted-time interval probe.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTime
+  FILE_GUID                      = 95a6cffd-c8da-46cb-b67c-5850242dc0d9
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  PbnsTime.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  PbnsCoreLib
+  PbnsCoseCryptoLib
+  PbnsTrustedTimeLib
+  PbnsUefiPlatformLib
+  UefiApplicationEntryPoint
+  UefiLib

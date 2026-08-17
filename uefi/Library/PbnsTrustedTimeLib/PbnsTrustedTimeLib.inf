@@ -1,0 +1,28 @@
+## @file
+# PBNS UEFI trusted-time client adapters.
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = PbnsTrustedTimeLib
+  FILE_GUID                      = f71e0fc7-ebf0-4362-b447-d97765659be3
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PbnsTrustedTimeLib
+
+[Sources]
+  PbnsTrustedTimeLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  pbns/PbnsPkg.dec
+
+[LibraryClasses]
+  PbnsCoreLib
+  PbnsCoseCryptoLib
+  PbnsUefiPlatformLib
+
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -std=c17 -Wextra -Wconversion -Wsign-conversion -Wshadow -Wvla -Wcast-qual -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wdouble-promotion -Wwrite-strings

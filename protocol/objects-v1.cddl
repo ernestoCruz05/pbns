@@ -1,0 +1,255 @@
+common-context = {
+  1: tstr,
+  2: 1,
+  3: 1..4,
+  4: bstr .size 16,
+  5: (bstr .size 0) / (bstr .size 32),
+  6: bstr .size 32,
+  7: uint,
+  8: uint,
+  9: bstr
+}
+
+; O pedido não contém tempo civil fornecido pelo anfitrião.
+service-key-certificate = {
+  0: "PBNS-SERVICE-KEY-v1",
+  1: 1,
+  2: "trusted-time" / "recovery-manifest" / "enrollment" / "attestation" / "attestation-receipt",
+  3: bstr .size (1..64),
+  4: bstr,
+  5: int,
+  6: int,
+  7: bstr
+}
+
+trusted-time-request = {
+  1: "PBNS-TIME-v1",
+  2: 1,
+  3: 1,
+  4: bstr .size 16,
+  5: bstr .size 32,
+  6: bstr .size 32,
+  7: 1..60000
+}
+
+trusted-time-assertion = {
+  1: "PBNS-TIME-v1",
+  2: 1,
+  3: 1,
+  4: bstr .size 16,
+  5: bstr .size 32,
+  6: bstr .size 32,
+  7: uint,
+  8: 0..999999999,
+  9: uint,
+  10: tstr .size (1..64),
+  11: bstr .size (1..64),
+  12: 1..60000
+}
+
+; O resumo vazio distingue o pedido de manifesto da seleção limitada do artefacto ativo.
+recovery-request = {
+  1: "PBNS-RECOVERY-REQUEST-v1",
+  2: 1,
+  3: 2,
+  4: 1,
+  5: bstr .size 16,
+  6: bstr .size 32,
+  7: bstr .size 32,
+  8: bstr .size 32 ; 32 octetos zero
+} / {
+  1: "PBNS-RECOVERY-REQUEST-v1",
+  2: 1,
+  3: 2,
+  4: 2,
+  5: bstr .size 16,
+  6: bstr .size 32,
+  7: bstr .size 32,
+  8: bstr .size 32 ; resumo não nulo do artefacto verificado
+}
+
+; Os campos 7 e 8 do contexto repetem os limites em nanossegundos e o corpo é vazio.
+recovery-manifest = {
+  1: {
+    1: "PBNS-RECOVERY-MANIFEST-v1",
+    2: 1,
+    3: 2,
+    4: bstr .size 16,
+    5: bstr .size 32,
+    6: bstr .size 32,
+    7: uint,
+    8: uint,
+    9: bstr .size 0
+  },
+  10: bstr .size 32,
+  11: uint,
+  12: "x86_64",
+  13: "uki-pe-coff",
+  14: 1..268435456,
+  15: 16384,
+  16: uint,
+  17: int,
+  18: int,
+  19: bstr .size (1..4096),
+  20: bstr .size (1..64)
+}
+
+; O token existe apenas dentro deste texto simples cifrado.
+enrollment-init = {
+  1: common-context,
+  10: bstr .size 32,
+  11: bstr,
+  12: [* bstr],
+  13: bstr,
+  14: bstr,
+  15: bstr,
+  16: bstr .size 32,
+  17: bstr .size 32,
+  18: 1..2,
+  19: bstr,
+  20: bstr,
+  21: bstr,
+  22: bstr
+}
+
+enrollment-challenge = {
+  1: common-context,
+  20: bstr .size 32,
+  21: bstr .size 32,
+  22: bstr .size 32,
+  23: bstr,
+  24: bstr,
+  25: 1..2
+}
+
+enrollment-proof = {
+  1: common-context,
+  30: bstr .size 32,
+  31: bstr .size 32,
+  32: bstr,
+  33: bstr,
+  34: bstr,
+  35: bstr .size 32,
+  36: bstr,
+  37: 1..2
+}
+
+enrollment-receipt = {
+  1: common-context,
+  40: bstr .size 32,
+  41: "software" / "tpm-unverified-ek" / "tpm-verified",
+  42: bstr .size 32,
+  43: uint,
+  44: bstr .size (1..64)
+}
+
+; A classe de capacidade de armazenamento é GiB binário completo, sem meios removíveis.
+attestation-context = {
+  1: "PBNS-ATTESTATION-v1",
+  2: 1,
+  3: 3,
+  4: bstr .size 16,
+  5: bstr .size 32,
+  6: bstr .size 32,
+  7: uint,
+  8: uint,
+  9: bstr .size 0
+}
+
+attestation-challenge = {
+  1: attestation-context,
+  10: bstr .size 32,
+  11: [1* {1: uint, 2: [1* uint]}],
+  12: bstr .size (1..64),
+  13: int
+}
+
+attestation-evidence = {
+  1: attestation-context,
+  20: inventory-report,
+  21: bstr,
+  22: bstr,
+  23: [1* {1: uint, 2: uint, 3: bstr}],
+  24: bstr,
+  25: bstr .size (1..128),
+  26: bstr .size (1..4096),
+  27: bstr .size 32,
+  28: bstr .size 32,
+  29: bstr .size 32
+}
+
+attestation-receipt-payload = {
+  1: "PBNS-ATTESTATION-RECEIPT-v1",
+  2: 1,
+  3: 3,
+  4: bstr .size 16,
+  5: bstr .size 32,
+  6: bstr .size 32,
+  7: bstr .size 32,
+  8: bstr .size 32,
+  9: 1..3, ; full, reduced, failure
+  10: [* 1..16], ; canónico, estritamente crescente e sem duplicados
+  11: bstr .size (1..64)
+}
+
+attestation-receipt-protected = {1: -7, 4: bstr .size (1..64)}
+; O bstr protegido contém a codificação canónica exata do mapa acima.
+; A AAD externa é "PBNS-ATTESTATION-RECEIPT-SIGN-v1" e não integra o objeto.
+attestation-receipt = #6.18([
+  bstr .cbor attestation-receipt-protected,
+  {},
+  bstr .cbor attestation-receipt-payload, ; contém a codificação canónica exata da carga do recibo
+  bstr .size 64
+])
+
+baseline-change-classification = 1 / 2 ; inventário / segurança
+
+baseline-update-proposal = {
+  1: "PBNS-BASELINE-UPDATE-v1",
+  2: 1,
+  3: bstr .size 32,
+  4: bstr .size 32,
+  5: bstr .size 32,
+  6: bstr,
+  7: baseline-change-classification,
+  8: int,
+  9: int,
+  10: bstr .size 32
+}
+
+baseline-update-approval-protected = {1: -7, 4: bstr .size 32}
+; O bstr protegido contém a codificação canónica exata do mapa acima.
+; A AAD externa é "PBNS-BASELINE-UPDATE-SIGN-v1" e não integra o objeto.
+baseline-update-approval = #6.18([
+  bstr .cbor baseline-update-approval-protected,
+  {},
+  bstr .cbor baseline-update-proposal, ; contém a codificação canónica exata da proposta
+  bstr .size 64
+])
+
+inventory-report = {
+  1: bstr .size 32,
+  2: bstr .size 32,
+  3: tstr,
+  4: tstr,
+  5: tstr,
+  6: uint,
+  7: bstr .size 32,
+  8: {1: uint, 2: uint},
+  9: bool,
+  10: bool,
+  11: bstr .size 32,
+  12: bstr .size 32,
+  13: {1: bool, 2: uint, 3: uint, 4: [* uint]},
+  14: {1: uint, 2: uint, 3: uint},
+  15: {* uint => uint},
+  16: {* uint => uint},
+  17: uint
+}
+
+enrollment-encrypted-envelope = {
+  1: bstr .size 16,
+  2: bstr .size 32,
+  3: bstr .size (1..64),
+  4: bstr
+}
